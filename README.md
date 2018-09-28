@@ -1,0 +1,2 @@
+# GeneralScripts
+Some scripts collections
