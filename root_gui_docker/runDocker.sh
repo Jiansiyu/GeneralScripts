@@ -55,5 +55,5 @@ fi
 
 xhost +
 
-sudo docker run  -v ${HostShareDir}:/home/rootGUI/data   -v /etc/localtime:/etc/localtime:ro -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=unix$DISPLAY -e GDK_SCALE -e GDK_DPI_SCALE -it uvasiyu/root_gui
+sudo docker run  -v ${HostShareDir}:/home/rootGUI/data   -v /etc/localtime:/etc/localtime:ro -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=unix$DISPLAY -e GDK_SCALE -e GDK_DPI_SCALE -i uvasiyu/root_gui
 
