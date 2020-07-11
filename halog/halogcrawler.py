@@ -14,6 +14,22 @@ from dateutil import tz
 from dateutil.parser import parse
 
 class halogCrawler(object):
+    '''
+    Get the counting run List
+
+    Entrience Funtion
+        *getRunList
+
+    Typical Usage
+
+    #  Get the Run List
+    python3 halogcrawler.py
+    
+    # Gnerate the  BeamE bash sripts
+
+    python3 halogcrawler.py [runID]...
+    '''
+
     def __init__(self):
         self.baseurl='http://logbooks.jlab.org/api/elog/entries'
         pass
@@ -278,7 +294,7 @@ class halogCrawler(object):
                     decodedItem['StartDate']=startDatetime.strftime("%Y-%m-%d")
                     decodedData.append(decodedItem)
 
-        self._writeDic2csv(data=decodedData)
+        self._writeDic2csv(data=decodedData,filename='runList.csv')
 
     def _runListJsonDecoder(self,data={}):
         '''
