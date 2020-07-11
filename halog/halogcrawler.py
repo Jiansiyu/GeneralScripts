@@ -99,13 +99,13 @@ class halogCrawler(object):
                     for titleSplitItem in titleSplit:
                         if 'Start_' in titleSplitItem:
                             entryData['runID']=int(titleSplitItem.split('_')[-1])
-                        else:
-                            entryData['runID'] = 0
+                        #else:
+                        #    entryData['runID'] = 0
 
                         if 'Run_type' in titleSplitItem:
                             entryData['run_type'] = titleSplitItem.split('=')[-1]
-                        else:
-                            entryData['run_type']='None'
+                        #else:
+                        #    entryData['run_type']='None'
 
                         if 'production_target_type' in titleSplitItem:
                             entryData['production_target_type'] =  titleSplitItem.split('=')[-1]
