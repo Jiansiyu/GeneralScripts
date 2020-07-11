@@ -99,36 +99,41 @@ class halogCrawler(object):
                     for titleSplitItem in titleSplit:
                         if 'Start_' in titleSplitItem:
                             entryData['runID']=int(titleSplitItem.split('_')[-1])
-                        #else:
-                        #    entryData['runID'] = 0
 
                         if 'Run_type' in titleSplitItem:
                             entryData['run_type'] = titleSplitItem.split('=')[-1]
-                        #else:
-                        #    entryData['run_type']='None'
 
                         if 'production_target_type' in titleSplitItem:
                             entryData['production_target_type'] =  titleSplitItem.split('=')[-1]
-                        else:
-                            entryData['production_target_type'] = 'None'
 
                         if 'optics_target_type' in titleSplitItem:
                             entryData['optics_target_type'] =  titleSplitItem.split('=')[-1]
-                        else:
-                            entryData['optics_target_type'] = 'None'
 
+                    # decode the body content
                     if 'body' in item:
                         if 'content' in item['body']:
                             bodytext = item['body']['content']
                             for bodyItem in bodytext.split('\n'):
                                 if 'Run Timestamp:' in bodyItem:
                                     entryData['StartTimestamp'] = bodyItem.replace('Run Timestamp:', '')
-                                else:
-                                    entryData['StartTimestamp'] = 'None'
-                        else:
-                            entryData['StartTimestamp'] = 'None'
-                    else:
-                        entryData['StartTimestamp'] = 'None'
+
+
+
+                    if not 'runID' in entryData.keys():
+                        entryData['runID'] =0
+
+                    if not 'run_type' in entryData.keys():
+                        entryData['run_type'] = None
+
+                    if not 'production_target_type' in entryData.keys():
+                        entryData['production_target_type'] = None
+
+                    if not 'optics_target_type' in entryData.keys():
+                        entryData['optics_target_type'] = None
+
+                    if not 'StartTimestamp' in entryData.keys():
+                        entryData['StartTimestamp'] = None
+
                     print(entryData)
                     decodedData.append(entryData)
 
