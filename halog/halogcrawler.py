@@ -146,8 +146,5 @@ class halogCrawler(object):
     def test(self):
         self.getRunList(searchKey='Start_Run_',StartTime='2019-06-01',EndTime='2019-10-21')
 if __name__ == '__main__':
-    #test=halogCrawler()
-    #test.test()
-    if len(sys.argv) > 1:
-        for item in sys.argv:
-            print(item)
+    test=halogCrawler()
+    test.test()
