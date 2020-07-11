@@ -32,7 +32,7 @@ class halogCrawler(object):
         '''
         pass
 
-    def _writeDic2csv(self, header=['StartDate','lognumber','runID','run_type','production_target_type','optics_target_type','url','StartTimestamp'],data={},filename=''):
+    def _writeDic2csv(self, header=['StartDate','lognumber','runID','run_type','production_target_type','optics_target_type','comment_text','url','StartTimestamp','fulltitle'],data={},filename=''):
         if not filename:
             filename='text.csv'
         try:
@@ -95,6 +95,8 @@ class halogCrawler(object):
                     entryData['url'] = 'https://logbooks.jlab.org/entry/{}'.format(item['lognumber'])
                     titleSplit=item['title'].split(',')
 
+                    entryData['fulltitle=']=item['title']
+
 
                     for titleSplitItem in titleSplit:
                         if 'Start_' in titleSplitItem:
@@ -108,6 +110,10 @@ class halogCrawler(object):
 
                         if 'optics_target_type' in titleSplitItem:
                             entryData['optics_target_type'] =  titleSplitItem.split('=')[-1]
+
+                        if 'comment_text' in titleSplitItem:
+                            entryData['comment_text'] = titleSplitItem.split('=')[-1]
+
 
                     # decode the body content
                     if 'body' in item:
@@ -123,16 +129,16 @@ class halogCrawler(object):
                         entryData['runID'] =0
 
                     if not 'run_type' in entryData.keys():
-                        entryData['run_type'] = None
+                        entryData['run_type'] = 'None'
 
                     if not 'production_target_type' in entryData.keys():
-                        entryData['production_target_type'] = None
+                        entryData['production_target_type'] = 'None'
 
                     if not 'optics_target_type' in entryData.keys():
-                        entryData['optics_target_type'] = None
+                        entryData['optics_target_type'] = 'None'
 
                     if not 'StartTimestamp' in entryData.keys():
-                        entryData['StartTimestamp'] = None
+                        entryData['StartTimestamp'] = 'None'
 
                     print(entryData)
                     decodedData.append(entryData)
