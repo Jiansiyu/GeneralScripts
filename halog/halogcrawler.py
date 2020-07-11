@@ -144,7 +144,7 @@ class halogCrawler(object):
         return  decodedData
 
     def test(self):
-        self.getRunList(searchKey='Start_Run_',StartTime='2019-08-18',EndTime='2019-08-21')
+        self.getRunList(searchKey='Start_Run_',StartTime='2019-06-01',EndTime='2019-10-21')
 if __name__ == '__main__':
     test=halogCrawler()
     test.test()
