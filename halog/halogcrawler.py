@@ -73,7 +73,7 @@ class halogCrawler(object):
                     decodedItem['StartDate']=startDatetime.strftime("%Y-%m-%d")
                     decodedData.append(decodedItem)
 
-        # self._writeDic2csv(data=decodedData)
+        self._writeDic2csv(data=decodedData)
 
     def _runListJsonDecoder(self,data={}):
         '''
