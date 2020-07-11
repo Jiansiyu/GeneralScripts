@@ -19,6 +19,14 @@ class halogCrawler(object):
         :return:
         '''
         pass
+
+    def getCountingRunTime(self,runID=0):
+        StartRunSearchKey='Start_Run_{}'.format(runID)
+        EndRunSearchKey='End_of_Run_{}'.format(runID)
+
+        pass
+
+
     def getStartTime(self, searchKey=''):
         '''
         :param searchKey:
@@ -95,7 +103,7 @@ class halogCrawler(object):
                     entryData['url'] = 'https://logbooks.jlab.org/entry/{}'.format(item['lognumber'])
                     titleSplit=item['title'].split(',')
 
-                    entryData['fulltitle=']=item['title']
+                    entryData['fulltitle']=item['title']
 
 
                     for titleSplitItem in titleSplit:
@@ -151,6 +159,10 @@ class halogCrawler(object):
 
     def test(self):
         self.getRunList(searchKey='Start_Run_',StartTime='2019-06-01',EndTime='2019-10-21')
+    def testSingleRun(self):
+        self.getCountingRunTime(runID=20891)
+
 if __name__ == '__main__':
     test=halogCrawler()
     test.test()
+    # test.testSingleRun()
