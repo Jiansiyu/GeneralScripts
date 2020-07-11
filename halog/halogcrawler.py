@@ -253,7 +253,7 @@ class halogCrawler(object):
             return  dt_pst
 
 
-    def _writeDic2csv(self, header=['StartDate','lognumber','runID','run_type','production_target_type','optics_target_type','comment_text','url','StartTimestamp','fulltitle'],data={},filename=''):
+    def _writeDic2csv(self, header=['StartDate','lognumber','runID','run_type','production_target_type','optics_target_type','url','StartTimestamp','comment_text','fulltitle'],data={},filename=''):
         if not filename:
             filename='text.csv'
         try:
@@ -360,6 +360,9 @@ class halogCrawler(object):
 
                     if not 'StartTimestamp' in entryData.keys():
                         entryData['StartTimestamp'] = 'None'
+
+                    if not 'comment_text' in entryData.keys():
+                        entryData['comment_text'] = 'None'
 
                     print(entryData)
                     decodedData.append(entryData)
