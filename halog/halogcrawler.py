@@ -73,7 +73,7 @@ class halogCrawler(object):
                     decodedItem['StartDate']=startDatetime.strftime("%Y-%m-%d")
                     decodedData.append(decodedItem)
 
-        self._writeDic2csv(data=decodedData)
+        # self._writeDic2csv(data=decodedData)
 
     def _runListJsonDecoder(self,data={}):
         '''
@@ -99,18 +99,6 @@ class halogCrawler(object):
                     for titleSplitItem in titleSplit:
                         if 'Start_' in titleSplitItem:
                             entryData['runID']=int(titleSplitItem.split('_')[-1])
-                            if 'body' in item:
-                                if 'content' in item['body']:
-                                    bodytext = item['body']['content']
-                                    for bodyItem in bodytext.split('\n'):
-                                        if 'Run Timestamp:' in bodyItem:
-                                            entryData['StartTimestamp']=bodyItem.replace('Run Timestamp:','')
-                                        else:
-                                            entryData['StartTimestamp'] ='None'
-                                else:
-                                    entryData['StartTimestamp'] = 'None'
-                            else:
-                                entryData['StartTimestamp'] = 'None'
                         else:
                             entryData['runID'] = 0
 
@@ -128,6 +116,20 @@ class halogCrawler(object):
                             entryData['optics_target_type'] =  titleSplitItem.split('=')[-1]
                         else:
                             entryData['optics_target_type'] = 'None'
+
+                    if 'body' in item:
+                        if 'content' in item['body']:
+                            bodytext = item['body']['content']
+                            for bodyItem in bodytext.split('\n'):
+                                if 'Run Timestamp:' in bodyItem:
+                                    entryData['StartTimestamp'] = bodyItem.replace('Run Timestamp:', '')
+                                else:
+                                    entryData['StartTimestamp'] = 'None'
+                        else:
+                            entryData['StartTimestamp'] = 'None'
+                    else:
+                        entryData['StartTimestamp'] = 'None'
+                    print(entryData)
                     decodedData.append(entryData)
 
         else:
@@ -137,7 +139,7 @@ class halogCrawler(object):
         return  decodedData
 
     def test(self):
-        self.getRunList(searchKey='Start_Run_',StartTime='2019-06-01',EndTime='2019-10-21')
+        self.getRunList(searchKey='Start_Run_',StartTime='2019-08-18',EndTime='2019-08-21')
 if __name__ == '__main__':
     test=halogCrawler()
     test.test()
