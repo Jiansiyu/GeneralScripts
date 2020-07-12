@@ -373,16 +373,162 @@ class halogCrawler(object):
             print("[Worning] :: the size does not match ")
         return  decodedData
 
+
+
+    def getParityRunList(self, searchKey='',StartTime='',EndTime='',timeBin=datetime.timedelta(days=1)):
+        '''
+        Search the Halog, and write the information to csv file
+        :param searchKey:
+        :param StartTime:
+        :param EndTime:
+        :return:
+        '''
+        # convert the time to the string
+        startDatetime=datetime.datetime.strptime(StartTime,'%Y-%m-%d')
+        endDatetime = datetime.datetime.strptime(EndTime, '%Y-%m-%d')
+
+        decodedData=[]
+        # binary the file
+        while startDatetime < endDatetime:
+            sleep(5)
+            # form the query string
+            nextTime=startDatetime+timeBin
+            url='{}?book={}&title={}&startdate={}&enddate={}&field=lognumber&field=title&field=body&limit=1000'.format(self.baseurl,'HALOG',searchKey,startDatetime.strftime("%Y-%m-%d"),nextTime.strftime("%Y-%m-%d"))
+            startDatetime=nextTime
+            print('{}  {}'.format(startDatetime,url))
+            # urllib.request(url)
+            with urllib.request.urlopen(url) as urldata:
+                data = json.loads(urldata.read().decode())
+                for decodedItem in self._ParityrunListJsonDecoder(data=data):
+                    decodedItem['StartDate']=startDatetime.strftime("%Y-%m-%d")
+                    decodedData.append(decodedItem)
+
+        self._writeDic2csv(data=decodedData,filename='ParityrunList.csv',header=['StartDate','lognumber','runID','Run_type','target_type','CODA_Config','beam_current','beam_energy','beam_raster','parity_feedback','parity_ihwp','fulltitle','url'])
+
+    def _ParityrunListJsonDecoder(self,data={}):
+        '''
+        :param data:
+        :return:
+        '''
+        decodedData=[]
+
+        if data['stat']=='ok':
+            totalItem=int(data['data']['totalItems'])
+            pageLimit=int(data['data']['pageLimit'])
+
+            if totalItem <= pageLimit and totalItem >= 1:
+                for item in data['data']['entries']:
+                    entryData = {}
+                    entryData['lognumber']=item['lognumber']
+                    entryData['url'] = 'https://logbooks.jlab.org/entry/{}'.format(item['lognumber'])
+                    titleSplit=item['title'].split(',')
+
+                    entryData['fulltitle']=item['title']
+
+
+                    for titleSplitItem in titleSplit:
+                        print(titleSplitItem)
+                        try:
+                            if 'Start_' in titleSplitItem:
+                                if (titleSplitItem.split('_')[-1]).isdigit():
+                                    entryData['runID']=int(titleSplitItem.split('_')[-1])
+                                else:
+                                    entryData['runID'] =0
+                            if 'CODA_Config' in titleSplitItem:
+                                entryData['CODA_Config'] = titleSplitItem.split('=')[-1]
+
+                            if 'Run_type' in titleSplitItem:
+                                entryData['Run_type'] = titleSplitItem.split('=')[-1]
+
+                            if 'beam_current' in titleSplitItem:
+                                entryData['beam_current'] = titleSplitItem.split('=')[-1]
+
+                            if 'beam_energy' in titleSplitItem:
+                                entryData['beam_energy'] = titleSplitItem.split('=')[-1]
+
+                            if 'beam_raster' in titleSplitItem:
+                                entryData['beam_raster'] = titleSplitItem.split('=')[-1]
+
+                            if 'parity_feedback' in titleSplitItem:
+                                entryData['parity_feedback'] = titleSplitItem.split('=')[-1]
+
+                            if 'parity_ihwp' in titleSplitItem:
+                                entryData['parity_ihwp'] = titleSplitItem.split('=')[-1]
+
+                            if 'target_type' in titleSplitItem:
+                                entryData['target_type'] = titleSplitItem.split('=')[-1]
+                        except :
+                            print("decode error")
+
+                    # decode the body content
+                    if 'body' in item:
+                        if 'content' in item['body']:
+                            bodytext = item['body']['content']
+                            for bodyItem in bodytext.split('\n'):
+                                if 'Run Timestamp:' in bodyItem:
+                                    entryData['StartTimestamp'] = bodyItem.replace('Run Timestamp:', '')
+
+                    if not 'runID' in entryData.keys():
+                        entryData['runID'] =0
+
+                    if not 'CODA_Config' in entryData.keys():
+                        entryData['CODA_Config'] = 'None'
+
+                    if not 'Run_type' in entryData.keys():
+                        entryData['Run_type'] = 'None'
+
+                    if not 'beam_current' in entryData.keys():
+                        entryData['beam_current'] = 'None'
+
+                    if not 'beam_energy' in entryData.keys():
+                        entryData['beam_energy'] = 'None'
+
+                    if not 'beam_raster' in entryData.keys():
+                        entryData['beam_raster'] = 'None'
+
+                    if not 'parity_feedback' in entryData.keys():
+                        entryData['parity_feedback'] = 'None'
+
+                    if not 'parity_ihwp' in entryData.keys():
+                        entryData['parity_ihwp'] = 'None'
+
+                    if not 'target_type' in entryData.keys():
+                        entryData['target_type'] = 'None'
+
+                    print(entryData)
+                    decodedData.append(entryData)
+
+        else:
+            print('[Error]:: wrong return json')
+        if len(decodedData) != totalItem:
+            print("[Worning] :: the size does not match ")
+        return  decodedData
+
     def test(self):
         self.getRunList(searchKey='Start_Run_',StartTime='2019-06-01',EndTime='2019-10-21')
     def testSingleRun(self):
         self.getCountingRunTime(runID=20891)
 
+    def testPariyRunList(self):
+        self.getParityRunList(searchKey='Start_Parity_Run_',StartTime='2019-06-01',EndTime='2019-10-01')
+
+
 if __name__ == '__main__':
     test = halogCrawler()
     if len(sys.argv) ==1:
+        test.testPariyRunList()
         test.test()
     else:
+        runIDList=[]
+        for item in sys.argv:
+            if item.isdigit():
+                runIDList.append(item)
+            else:
+                if 'parity' in item.lower():
+                    test.testPariyRunList()
+                else:
+                    if 'counting' in item.lower():
+                        test.test()
         if 'jlab' in os.name()[1]:
             test.getCountingBeamEbash(runIDs=sys.argv[1:])
         else:
