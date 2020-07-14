@@ -1,5 +1,7 @@
 # Sync two folders if new files added, created, modified
 
+Automatic transfer all the files from the source dir to the target dir when there is any change in the source path
+
 ## Usage
 ### clone and run
 ```
