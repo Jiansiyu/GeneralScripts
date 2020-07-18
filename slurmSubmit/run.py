@@ -1,17 +1,22 @@
 from subprocess import call
 import sys
 import os
+from pathlib import Path
+
 nn = [i for i in range(0, 10)]
 
 runList=[]
 
 def generateRunJobs(runID=0):
+    if os.path.isfile("job/"+str(runID)+".txt"):
+        # Job have been submitted
+        return True
     with open("job/"+str(runID)+".txt", "w") as txt:
         txt.write("PROJECT: PRex\n")
-        if len(sys.argv) < 9:
-            txt.write("TRACK: debug\n")
-        else:
-            txt.write("TRACK: analysis\n")
+        # if len(sys.argv) < 9:
+        #txt.write("TRACK: debug\n")
+        # else:
+        txt.write("TRACK: analysis\n")
         
         txt.write("COMMAND: /w/halla-scifs17exp/parity/disk1/siyu/prex_replay/replay/runDp.csh {}\n".format(runID))
         # txt.write("OPTIONS: /lustre/expphy/work/hallb/prad/siyu/Simulation/PRadSim_build/run.mac\n")
@@ -20,6 +25,7 @@ def generateRunJobs(runID=0):
         txt.write("MEMORY: 4 GB\n")
         txt.write("DISK_SPACE: 20 GB\n")
         txt.write("OS: centos7\n")
+    return True
 
 def decodeRunFile(RunListFileName):
     '''
@@ -51,41 +57,48 @@ def decodeRunFile(RunListFileName):
         elif len(line) ==1 and len(line[0]) > 2:
             runIDListArray.append(line[0])
     return runIDListArray
+
+def CheckFileExist(runID=1):
+    filenameStr='/cache/halla/happexsp/raw/prexLHRS_{}.dat.0'.format(runID)
+    if int(runID) > 20000:
+        filenameStr='/cache/halla/happexsp/raw/prexRHRS_{}.dat.0'.format(runID)
+    if os.path.isfile(filenameStr):
+        if Path(filenameStr).stat().st_size > 198432768:
+            print('Find :: {}'.format(filenameStr))
+            return True 
+        else:
+            #os.system('python3 /u/home/siyuj/Tools/jcache.py {}'.format(runID))
+            print('Size too small  [re cache it] :: {}'.format(filenameStr))
+            return False
+    else:
+        # print('Not Exist :: {}'.format(filenameStr))
+        return False
+
+def IsReplayed(runID=1):
+    filenameStr='/u/scratch/siyuj/Result/prexLHRS_{}_-1.root'.format(runID)
+    if int(runID) > 20000:
+        filenameStr='/u/scratch/siyuj/Result/prexRHRS_{}_-1.root'.format(runID)
+    if os.path.isfile(filenameStr):
+        print('Find :: {}'.format(filenameStr))
+        return False
+    else:
+        # print('Not Exist :: {}'.format(filenameStr))
+        return True
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         for runID in sys.argv[1:]:
             if runID.isdigit():
-                generateRunJobs(runID=runID)
-                runList.append(runID)
+                if CheckFileExist(runID=runID) and IsReplayed(runID=runID):
+                    if generateRunJobs(runID=runID):
+                        runList.append(runID)
             else:
                 if '.txt' in runID:
                     for infor in decodeRunFile(RunListFileName=runID):
-                        generateRunJobs(runID=infor)
-                        runList.append(infor)
+                        if CheckFileExist(runID=infor) and IsReplayed(runID=infor):
+                            if generateRunJobs(runID=infor):
+                                runList.append(infor)
         for runID in runList:
             ss = "job/"+str(runID)+".txt"
-            call(["jsub", ss])
-
-
-# if __name__ == "__main__":
-#     if len(sys.argv) > 1:
-#         for runID in sys.argv[1:]:
-#         # generate jsub job txt files
-#             with open("job/"+str(runID)+".txt", "w") as txt:
-#                 txt.write("PROJECT: PRex\n")
-#                 if len(sys.argv) < 9:
-#                     txt.write("TRACK: debug\n")
-#                 else:
-#                     txt.write("TRACK: analysis\n")
-                
-#                 txt.write("COMMAND: /w/halla-scifs17exp/parity/disk1/siyu/prex_replay/replay/runDp.csh {}\n".format(runID))
-#                 # txt.write("OPTIONS: /lustre/expphy/work/hallb/prad/siyu/Simulation/PRadSim_build/run.mac\n")
-#                 #txt.write("OTHER_FILES: /lustre/expphy/work/hallb/prad/xbai/PRadSim/build/database/*\n")
-#                 txt.write("JOBNAME: counting_replay\n")
-#                 txt.write("MEMORY: 4 GB\n")
-#                 txt.write("DISK_SPACE: 20 GB\n")
-#                 txt.write("OS: centos7\n")
-#         # submit jobs
-#         for runID in sys.argv[1:]:
-#             ss = "job/"+str(runID)+".txt"
-#             call(["jsub", ss])
+            if os.path.isfile(ss):
+                call(["jsub", ss])
