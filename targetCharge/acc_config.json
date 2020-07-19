@@ -1,0 +1,7 @@
+{
+  "runList": "./runList.csv",
+  "summary_file": "/u/scratch/siyuj/summary",
+  "TargetNameList": {
+    "D9-208Pb10-D10": "D-208Pb10-D"
+  }
+}
