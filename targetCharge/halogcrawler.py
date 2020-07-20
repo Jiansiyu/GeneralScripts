@@ -155,7 +155,6 @@ class halogCrawler(object):
                           'EST': ET, 'EDT': ET,
                           'MST': MT, 'MDT': MT,
                           'PST': PT, 'PDT': PT}
-
             dt_pst = parse(decodedData[0]['StartTimestamp'])
             print(dt_pst)
             return dt_pst

@@ -11,6 +11,8 @@ from sqlalchemy import desc
 import halogcrawler
 import  json
 import csv
+import sys
+from dateutil.parser import parse
 
 class acc_charge(object):
     TargetNameList={}  # used for match the name difference between
@@ -237,11 +239,26 @@ class acc_charge(object):
         :param productionRunID:
         :return:
         '''
-        if 'jlab' in os.uname()[1]:
-            a=halogcrawler.halogCrawler()
-            return  a.getStartTime(searchKey="Start_Run_{}".format(productionRunID),runID=productionRunID)
+        if os.path.isfile(self.runListFilename):
+            with open(self.runListFilename) as f:
+                reader=csv.DictReader(f)
+                logList=list(reader)
         else:
-            return None
+            print('CAN NOT FIND FILE {}'.format(self.runListFilename))
+        for item in logList:
+            if productionRunID == int(item["runID"]):
+                timeString= item["StartTimestamp"]
+                dt_pst = parse(timeString)
+                return  dt_pst
+        return  None
+
+        # if 'jlab' in os.uname()[1]:
+        #     a=halogcrawler.halogCrawler()
+        #     starttime=a.getStartTime(searchKey="Start_Run_{},".format(productionRunID),runID=productionRunID)
+        #     print("{}  StartTime :{}".format(productionRunID,starttime))
+        #     return  starttime
+        # else:
+        #     return None
 
     def GetParityRunIDs(self,ProductionRunID=0, targName="D-208Pb10-D",SearchStartRunID=2573, SearchEndRunID=8000):
         '''
@@ -347,7 +364,7 @@ class acc_charge(object):
             item['acc_charge']=accumulate_charge
             print("------------------------------------------------>")
             print(item)
-            newDataList.append(accumulate_charge)
+            newDataList.append(item)
         self._writeDic2csv(data=newDataList,filename="acc_charge.csv")
     def test(self):
         self.ScanRunList()
@@ -360,4 +377,9 @@ if __name__ == "__main__":
         print("Script only works on JLab computers!!")
         exit(-1)
     a=acc_charge()
-    a.test()
+
+    if len(sys.argv) > 1:
+        if (sys.argv[1].isdigit()):
+            a.GetTargAccCharge(runID=int(sys.argv[1]))
+    else:
+        a.ScanRunList()
