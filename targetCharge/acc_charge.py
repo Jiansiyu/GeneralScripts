@@ -306,8 +306,9 @@ class acc_charge(object):
 
         ParityRunList=self.GetParityRunIDs(ProductionRunID=runID,targName=ParitytargetName)
         ParityRunList.sort()
+        if len(ParityRunList) < 1:
+            return  0.0
         print("{} -> {}".format(ParityRunList[0],ParityRunList[-1]))
-
         startParityrunID=ParityRunList[0]
         endParityrunID=ParityRunList[-1]
 
@@ -315,8 +316,38 @@ class acc_charge(object):
         print(self.TargetNameList)
         return  accumulatedCharge
 
+    def _writeDic2csv(self, header=['StartDate','lognumber','runID','run_type','acc_charge','production_target_type','optics_target_type','url','StartTimestamp','comment_text','fulltitle'],data={},filename=''):
+        if not filename:
+            filename='text.csv'
+        try:
+            with open(filename,'w') as csvfile:
+                writer=csv.DictWriter(csvfile,fieldnames=header)
+                writer.writeheader()
+                for dataItem in data:
+                    writer.writerow(dataItem)
+            pass
+        except IOError:
+            print("IO/ error when write data to file")
+
+    def ScanRunList(self):
+        newDataList=[]
+        if os.path.isfile(self.runListFilename):
+            with open(self.runListFilename) as f:
+                reader=csv.DictReader(f)
+                logList=list(reader)
+        else:
+            print('CAN NOT FIND FILE {}'.format(self.runListFilename))
+        for item in logList:
+            runID=int(item["runID"])
+            accumulate_charge=self.GetTargAccCharge(runID=runID)
+            item['acc_charge']=accumulate_charge
+            print("------------------------------------------------>")
+            print(item)
+            newDataList.append(accumulate_charge)
+        self._writeDic2csv(data=newDataList,filename="acc_charge.csv")
     def test(self):
-        self.GetTargAccCharge(runID=2047)
+        self.ScanRunList()
+        # self.GetTargAccCharge(runID=2047)
         # self.GetProductionTargType(runID=2047)
         # self.GetParityRunIDs(ProductionRunID=2730)
         # self.getChargeall()
