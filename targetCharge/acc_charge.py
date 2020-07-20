@@ -296,11 +296,11 @@ class acc_charge(object):
         target=self.GetProductionTargType(runID=runID)
         if not target:
             print("Can not find Counting Production target type for run <{}>".format(runID))
-            return  None
+            return  0.0
 
         if not target in self.TargetNameList:
             print("Production Typle <{}> can not find in the Target Name List, please add it in file \"acc_config.json\"".format(target))
-            return  None
+            return  0.0
         else:
             ParitytargetName = self.TargetNameList[target]
 
@@ -339,7 +339,11 @@ class acc_charge(object):
             print('CAN NOT FIND FILE {}'.format(self.runListFilename))
         for item in logList:
             runID=int(item["runID"])
+            if not item['production_target_type'] in self.TargetNameList:
+                continue
             accumulate_charge=self.GetTargAccCharge(runID=runID)
+            if accumulate_charge is None:
+                accumulate_charge=0.0
             item['acc_charge']=accumulate_charge
             print("------------------------------------------------>")
             print(item)
