@@ -17,9 +17,9 @@ if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
 endif()
 
 
-##----------------------------------------------------------------------------
+#8#----------------------------------------------------------------------------
 ## Set the sources which have a corresponding .h file here
-set(sources SBSGEM_standalone/GEM_reconstruct.C SBSGEM_standalone/GEMHit_tree.C  ) 
+set(sources PRex_pedestal_generator/src/BenchMark.cxx PRex_pedestal_generator/src/input_handler.cxx PRex_pedestal_generator/src/prex_online_display.cxx  PRex_pedestal_generator/src/raw_decoder.cxx  ) 
 ## Make corresponding header files
 string(REGEX REPLACE .cxx .h headers "${sources}")
 ## Append a few extra header files in the repository.  (But do not append the
@@ -44,9 +44,21 @@ list(APPEND PREXEXTRADEF_LIST VERBOSE TESTCODE MCDATA)
 set(minimum_root_version 5.10)
 find_package(ROOT REQUIRED)
 
+
 #----------------------------------------------------------------------------
 ## Setup the PODD Analyzer
 find_package(Podd 1.6 REQUIRED)
+
+
+# Required dependencies
+find_package(EVIO CONFIG QUIET)
+if(NOT EVIO_FOUND)
+  find_package(EVIO MODULE)
+  if(NOT EVIO_FOUND)
+    include(FetchBuildEVIO)
+  endif()
+endif()
+
 
 ##----------------------------------------------------------------------------
 ## Check for SStream support
