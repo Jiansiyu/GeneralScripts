@@ -23,6 +23,6 @@ bash autossSet.sh
 or 
 
 ```
-curl -sL | bash 
+curl -sL https://raw.githubusercontent.com/Jiansiyu/GeneralScripts/master/autoLogon/autosshSet.sh | bash 
 
 ```
