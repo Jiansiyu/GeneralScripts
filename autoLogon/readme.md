@@ -2,6 +2,10 @@
 
 A very naive tool used for send the current client  ssh key to the remote server. It can auto detector the client enviroment to choose GUI or Batch Mode.
 
+* check the existance of local .ssh/id_rsa.pub. If not, generate a new one 
+* login to the servere and create .ssh folder if does not exist
+* send the local pub key to the server
+
 
 ### 1. GUI mode
 GUI mode need zenity support. If zenity is not installed:
