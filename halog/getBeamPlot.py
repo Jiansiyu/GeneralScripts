@@ -8,7 +8,7 @@ class beamEInfor(object):
     currentPath=os.getcwd()
     plotFolder='result'
     runListFile='runList/runList.txt'
-    BeamEFilePath='/home/newdriver/Storage/Server/JLabTempStorage/beamE'
+    BeamEFilePath='/home/newdriver/Storage/Server/JLabStorage/beamE'
     BeamEfileNamePattern='RHRS_{}_BeamE.txt'
     runList= {}    # {runID: runFullname}
     BeamEData={}   # {runID, [data]}   all the raw data
@@ -26,7 +26,7 @@ class beamEInfor(object):
                 if len(lines) > 10:
                     content=[x.strip() for x in lines]
                     beamEArray = [float(line.split()[-1]) for line in content]
-                    beamEArray = beamEArray[0:1300]
+                    beamEArray = beamEArray[0:900]
                     self.BeamEData[runID]=beamEArray
 
     def BeamE_SingRun(self):
