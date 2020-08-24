@@ -104,3 +104,61 @@ myget -b "2020-08-09 07:05:43" -e "2020-08-09 07:13:41" -c HALLA:p > RHRS_3112_B
 myget -b "2020-08-09 08:46:20" -e "2020-08-09 08:52:02" -c HALLA:p > RHRS_3113_BeamE.txt
 myget -b "2020-08-09 08:52:38" -e "2020-08-09 10:58:25" -c HALLA:p > RHRS_3114_BeamE.txt
 
+
+
+
+
+
+myget -b "2020-08-09 03:28:14" -e "2020-08-09 03:33:40" -c HALLA:p > RHRS_3097_BeamE.txt
+myget -b "2020-08-09 03:46:52" -e "2020-08-09 03:53:04" -c HALLA:p > RHRS_3098_BeamE.txt
+myget -b "2020-08-09 03:59:20" -e "2020-08-09 04:05:30" -c HALLA:p > RHRS_3099_BeamE.txt
+myget -b "2020-08-09 04:08:16" -e "2020-08-09 04:14:32" -c HALLA:p > RHRS_3100_BeamE.txt
+myget -b "2020-08-09 04:21:24" -e "2020-08-09 04:27:09" -c HALLA:p > RHRS_3101_BeamE.txt
+myget -b "2020-08-09 04:56:26" -e "2020-08-09 05:00:07" -c HALLA:p > RHRS_3102_BeamE.txt
+myget -b "2020-08-09 05:20:21" -e "2020-08-09 05:26:25" -c HALLA:p > RHRS_3103_BeamE.txt
+myget -b "2020-08-09 05:30:15" -e "2020-08-09 05:37:31" -c HALLA:p > RHRS_3104_BeamE.txt
+myget -b "2020-08-09 05:41:49" -e "2020-08-09 05:49:30" -c HALLA:p > RHRS_3105_BeamE.txt
+myget -b "2020-08-09 05:53:15" -e "2020-08-09 06:00:04" -c HALLA:p > RHRS_3106_BeamE.txt
+myget -b "2020-08-09 06:05:23" -e "2020-08-09 06:15:16" -c HALLA:p > RHRS_3107_BeamE.txt
+myget -b "2020-08-09 06:18:21" -e "2020-08-09 06:22:49" -c HALLA:p > RHRS_3108_BeamE.txt
+myget -b "2020-08-09 06:27:11" -e "2020-08-09 06:31:56" -c HALLA:p > RHRS_3109_BeamE.txt
+myget -b "2020-08-09 06:36:29" -e "2020-08-09 06:44:12" -c HALLA:p > RHRS_3110_BeamE.txt
+myget -b "2020-08-09 06:54:15" -e "2020-08-09 06:59:12" -c HALLA:p > RHRS_3111_BeamE.txt
+myget -b "2020-08-09 07:05:43" -e "2020-08-09 07:13:41" -c HALLA:p > RHRS_3112_BeamE.txt
+myget -b "2020-08-09 08:46:20" -e "2020-08-09 08:52:02" -c HALLA:p > RHRS_3113_BeamE.txt
+myget -b "2020-08-09 08:52:38" -e "2020-08-09 10:58:25" -c HALLA:p > RHRS_3114_BeamE.txt
+myget -b "2020-08-09 11:13:39" -e "2020-08-09 11:35:27" -c HALLA:p > RHRS_3115_BeamE.txt
+myget -b "2020-08-10 01:50:33" -e "2020-08-10 01:57:32" -c HALLA:p > RHRS_3118_BeamE.txt
+myget -b "2020-08-10 02:17:47" -e "2020-08-10 02:24:26" -c HALLA:p > RHRS_3119_BeamE.txt
+myget -b "2020-08-10 02:28:57" -e "2020-08-10 02:34:01" -c HALLA:p > RHRS_3120_BeamE.txt
+myget -b "2020-08-10 02:39:23" -e "2020-08-10 02:46:20" -c HALLA:p > RHRS_3121_BeamE.txt
+myget -b "2020-08-10 02:57:23" -e "2020-08-10 04:24:15" -c HALLA:p > RHRS_3122_BeamE.txt
+myget -b "2020-08-09 03:28:18" -e "2020-08-09 03:33:39" -c HALLA:p > RHRS_22103_BeamE.txt
+myget -b "2020-08-09 03:46:55" -e "2020-08-09 03:52:54" -c HALLA:p > RHRS_22104_BeamE.txt
+myget -b "2020-08-09 03:59:23" -e "2020-08-09 04:05:27" -c HALLA:p > RHRS_22105_BeamE.txt
+myget -b "2020-08-09 04:08:21" -e "2020-08-09 04:14:25" -c HALLA:p > RHRS_22106_BeamE.txt
+myget -b "2020-08-09 04:21:31" -e "2020-08-09 04:27:11" -c HALLA:p > RHRS_22107_BeamE.txt
+myget -b "2020-08-09 04:56:33" -e "2020-08-09 04:59:58" -c HALLA:p > RHRS_22108_BeamE.txt
+myget -b "2020-08-09 05:20:25" -e "2020-08-09 05:26:21" -c HALLA:p > RHRS_22109_BeamE.txt
+myget -b "2020-08-09 05:30:15" -e "2020-08-09 05:37:30" -c HALLA:p > RHRS_22110_BeamE.txt
+myget -b "2020-08-09 05:41:43" -e "2020-08-09 05:49:29" -c HALLA:p > RHRS_22111_BeamE.txt
+myget -b "2020-08-09 05:53:17" -e "2020-08-09 06:00:03" -c HALLA:p > RHRS_22112_BeamE.txt
+myget -b "2020-08-09 06:05:21" -e "2020-08-09 06:15:15" -c HALLA:p > RHRS_22113_BeamE.txt
+myget -b "2020-08-09 06:18:21" -e "2020-08-09 06:22:48" -c HALLA:p > RHRS_22114_BeamE.txt
+myget -b "2020-08-09 06:27:14" -e "2020-08-09 06:31:54" -c HALLA:p > RHRS_22115_BeamE.txt
+myget -b "2020-08-09 06:36:32" -e "2020-08-09 06:44:11" -c HALLA:p > RHRS_22116_BeamE.txt
+myget -b "2020-08-09 06:54:18" -e "2020-08-09 06:59:12" -c HALLA:p > RHRS_22117_BeamE.txt
+myget -b "2020-08-09 07:05:46" -e "2020-08-09 07:13:41" -c HALLA:p > RHRS_22118_BeamE.txt
+myget -b "2020-08-09 08:46:24" -e "2020-08-09 08:49:34" -c HALLA:p > RHRS_22119_BeamE.txt
+myget -b "2020-08-09 08:52:41" -e "2020-08-09 10:58:25" -c HALLA:p > RHRS_22120_BeamE.txt
+myget -b "2020-08-09 11:13:41" -e "2020-08-09 11:35:26" -c HALLA:p > RHRS_22121_BeamE.txt
+myget -b "2020-08-10 01:50:35" -e "2020-08-10 01:57:31" -c HALLA:p > RHRS_22124_BeamE.txt
+myget -b "2020-08-09 11:44:53" -e "2020-08-09 12:11:21" -c HALLA:p > RHRS_22122_BeamE.txt
+myget -b "2020-08-10 02:17:50" -e "2020-08-10 02:24:25" -c HALLA:p > RHRS_22125_BeamE.txt
+myget -b "2020-08-10 02:29:00" -e "2020-08-10 02:33:58" -c HALLA:p > RHRS_22126_BeamE.txt
+myget -b "2020-08-10 02:39:28" -e "2020-08-10 02:46:19" -c HALLA:p > RHRS_22127_BeamE.txt
+myget -b "2020-08-10 02:57:26" -e "2020-08-10 03:03:05" -c HALLA:p > RHRS_22128_BeamE.txt
+
+
+
+

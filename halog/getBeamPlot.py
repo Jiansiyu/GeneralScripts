@@ -55,7 +55,7 @@ class beamEInfor(object):
         #write the beam e into file
         with open("beamE.txt","w") as fileio:
             for key, value in beamEList.items():
-                fileio.write("{}={}\n".format(key,value))
+                fileio.write("{} {}\n".format(key,value))
         fileio.close()
 
     def GetRunList(self,runListfname=None):
