@@ -26,7 +26,7 @@ class beamEInfor(object):
                 if len(lines) > 10:
                     content=[x.strip() for x in lines]
                     beamEArray = [float(line.split()[-1]) for line in content]
-                    beamEArray = beamEArray[0:900]
+                    beamEArray = beamEArray#[0:900]
                     self.BeamEData[runID]=beamEArray
 
     def BeamE_SingRun(self):
@@ -34,6 +34,7 @@ class beamEInfor(object):
         Plot the single Run Beam E
         :return:
         '''
+        beamEList={}
         for item in self.BeamEData:
             mean = statistics.mean(self.BeamEData[item])
             stdv = statistics.stdev(self.BeamEData[item])
@@ -41,16 +42,22 @@ class beamEInfor(object):
             df    =pd.DataFrame(self.BeamEData[item], index=[x for x in range(0,len(self.BeamEData[item]))],columns=[str(item)])
             meandf=pd.DataFrame([mean for x in range(0, len(self.BeamEData[item]))],index=[x for x in range(0,len(self.BeamEData[item]))], columns=['mean'])
             df=df.join(meandf)
-
-            print(df)
+            # print(df)
+            print(("runID:{} -> {}".format(item, mean)))
 
             plt.plot(df)
             plt.text(10, mean, "Mean:{}, stdv{}".format(mean, stdv), size=18)
             plt.title('EPICS BeamE {}'.format(item))
-            plt.savefig("./BeamE{}.jpg".format(item))
+            plt.savefig("./result/BeamE{}.jpg".format(item))
             plt.show()
 
-        pass
+            beamEList[item]=mean
+        #write the beam e into file
+        with open("beamE.txt","w") as fileio:
+            for key, value in beamEList.items():
+                fileio.write("{}={}\n".format(key,value))
+        fileio.close()
+
     def GetRunList(self,runListfname=None):
         '''
         :param runListfname:
