@@ -8,7 +8,8 @@ class beamEInfor(object):
     currentPath=os.getcwd()
     plotFolder='result'
     runListFile='runList/runList.txt'
-    BeamEFilePath='/home/newdriver/Storage/Server/JLabStorage/beamE'
+    # BeamEFilePath='/home/newdriver/Storage/Server/JLabStorage/beamE'
+    BeamEFilePath = './beamE'
     BeamEfileNamePattern='RHRS_{}_BeamE.txt'
     runList= {}    # {runID: runFullname}
     BeamEData={}   # {runID, [data]}   all the raw data
@@ -73,6 +74,7 @@ class beamEInfor(object):
                     runID=int(line)
 
                     runfullname=os.path.join(self.BeamEFilePath,self.BeamEfileNamePattern.format(runID))
+                    print(runfullname)
                     if os.path.isfile(runfullname):
                         self.runList[runID]=runfullname
         print("{} files detected!!".format(len(self.runList)))

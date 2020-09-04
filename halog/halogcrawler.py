@@ -48,19 +48,23 @@ class halogCrawler(object):
                 for id in runIDs:
                     print('Working on {}'.format(id))
                     RunstartTime, RunendTime=self.getCountingRunTime(runID=id)
-                    fileio.write('myget -b \"{startTime}\" -e \"{endTime}\" -c HALLA:p > RHRS_{runID}_BeamE.txt\n'.format(startTime=RunstartTime.strftime("%Y-%m-%d %H:%M:%S"),endTime=RunendTime.strftime("%Y-%m-%d %H:%M:%S"),runID=id))
+                    if RunendTime and RunstartTime:
+                        fileio.write('myget -b \"{startTime}\" -e \"{endTime}\" -c HALLA:p > RHRS_{runID}_BeamE.txt\n'.format(startTime=RunstartTime.strftime("%Y-%m-%d %H:%M:%S"),endTime=RunendTime.strftime("%Y-%m-%d %H:%M:%S"),runID=id))
             except IOError:
                 print('[WORNING]: IO ERROR WHEN WRITING TO FILE')
         return  filename
 
     def getCountingRunTime(self,runID=0):
-        StartRunSearchKey='Start_Run_{}'.format(runID)
-        EndRunSearchKey='End_of_Run_{}'.format(runID)
-        startTime=self.getStartTime(searchKey=StartRunSearchKey,runID=runID)
-        endTime=self.getEndTime(searchKey=EndRunSearchKey,runID=runID)
-        print(startTime.strftime("%Y-%m-%d %H:%M:%S"))
-        print(endTime.strftime("%Y-%m-%d %H:%M:%S"))
-        return startTime,endTime
+        try:
+            StartRunSearchKey='Start_Run_{}'.format(runID)
+            EndRunSearchKey='End_of_Run_{}'.format(runID)
+            startTime=self.getStartTime(searchKey=StartRunSearchKey,runID=runID)
+            endTime=self.getEndTime(searchKey=EndRunSearchKey,runID=runID)
+            print(startTime.strftime("%Y-%m-%d %H:%M:%S"))
+            print(endTime.strftime("%Y-%m-%d %H:%M:%S"))
+            return startTime,endTime
+        except:
+            return None, None
 
     def getStartTime(self, searchKey='',runID=0):
         '''
