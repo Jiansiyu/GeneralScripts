@@ -43,6 +43,7 @@ myget -b "2019-06-26 10:41:59" -e "2019-06-26 11:01:02" -c HALLA:p > RHRS_1677_B
 Need to run this bash script on the apar.
 
 ### Create BeamE information 
+
 ![BeamE](./result/BeamE1696.jpg)
 ```python
 python getBeamPlot.py

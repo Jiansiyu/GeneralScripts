@@ -15,7 +15,6 @@ class beamEInfor(object):
     BeamEData={}   # {runID, [data]}   all the raw data
     BeanEAverageArray={}   # {runID, avaerage E for this run}
 
-
     def __init__(self):
         pass
 
