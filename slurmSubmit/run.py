@@ -3,7 +3,7 @@ import sys
 import os
 from pathlib import Path
 
-nn = [i for i in range(0, 10)]
+# nn = [i for i in range(0, 10)]
 
 runList=[]
 
@@ -13,10 +13,10 @@ def generateRunJobs(runID=0):
         return True
     with open("job/"+str(runID)+".txt", "w") as txt:
         txt.write("PROJECT: PRex\n")
-        # if len(sys.argv) < 9:
-        #txt.write("TRACK: debug\n")
-        # else:
-        txt.write("TRACK: analysis\n")
+        if len(sys.argv) < 10:
+            txt.write("TRACK: debug\n")
+        else:
+            txt.write("TRACK: analysis\n")
         
         txt.write("COMMAND: /w/halla-scifs17exp/parity/disk1/siyu/prex_replay/replay/runDp.csh {}\n".format(runID))
         # txt.write("OPTIONS: /lustre/expphy/work/hallb/prad/siyu/Simulation/PRadSim_build/run.mac\n")
@@ -24,7 +24,7 @@ def generateRunJobs(runID=0):
         txt.write("JOBNAME: counting_replay\n")
         txt.write("MEMORY: 4 GB\n")
         txt.write("DISK_SPACE: 20 GB\n")
-        txt.write("OS: centos7\n")
+        #txt.write("OS: centos7\n")
     return True
 
 def decodeRunFile(RunListFileName):
@@ -58,7 +58,7 @@ def decodeRunFile(RunListFileName):
             runIDListArray.append(line[0])
     return runIDListArray
 
-def CheckFileExist(runID=1):
+def CheckFileExist(runID=1,recacheList="recacheList.txt"):
     filenameStr='/cache/halla/happexsp/raw/prexLHRS_{}.dat.0'.format(runID)
     if int(runID) > 20000:
         filenameStr='/cache/halla/happexsp/raw/prexRHRS_{}.dat.0'.format(runID)
@@ -68,13 +68,16 @@ def CheckFileExist(runID=1):
             return True 
         else:
             #os.system('python3 /u/home/siyuj/Tools/jcache.py {}'.format(runID))
+            with open(recacheList,"a") as fileio:
+                fileio.write("{}\n".format(runID))
             print('Size too small  [re cache it] :: {}'.format(filenameStr))
             return False
     else:
         # print('Not Exist :: {}'.format(filenameStr))
         return False
 
-def IsReplayed(runID=1):
+def IsReplayed(runID=1,bashPath="/u/scratch/siyuj/Result"):
+
     filenameStr='/u/scratch/siyuj/Result/prexLHRS_{}_-1.root'.format(runID)
     if int(runID) > 20000:
         filenameStr='/u/scratch/siyuj/Result/prexRHRS_{}_-1.root'.format(runID)
@@ -98,6 +101,18 @@ if __name__ == "__main__":
                         if CheckFileExist(runID=infor) and IsReplayed(runID=infor):
                             if generateRunJobs(runID=infor):
                                 runList.append(infor)
+                if '-' in runID:
+                    runTempRange=runID.split('-')
+                    runStart=runTempRange[0]
+                    runEnd=runTempRange[-1]
+                    if runStart.isdigit() and runEnd.isdigit():
+                        runStart=int(runStart)
+                        runEnd=int(runEnd)
+                        while runStart <= runEnd:
+                            if CheckFileExist(runID=runStart) and IsReplayed(runID=runStart):
+                                if generateRunJobs(runID=runStart):
+                                    runList.append(runStart)
+                                    runStart = runStart + 1
         for runID in runList:
             ss = "job/"+str(runID)+".txt"
             if os.path.isfile(ss):

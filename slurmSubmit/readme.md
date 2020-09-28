@@ -15,3 +15,8 @@ python3 run.py runList.txt
 456 
 789
 ```
+
+### range format
+```
+python3 run.py 1000-2000 3000-4000
+```
