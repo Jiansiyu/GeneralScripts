@@ -600,12 +600,12 @@ class halogCrawler(object):
 
 
     def test(self):
-        self.getRunList(searchKey='Start_Run_',StartTime='2019-06-01',EndTime='2020-07-16')
+        self.getRunList(searchKey='Start_Run_',StartTime='2019-06-01',EndTime='2020-09-20')
     def testSingleRun(self):
         self.getCountingRunTime(runID=20891)
 
     def testPariyRunList(self):
-        self.getParityRunList(searchKey='Start_Parity_Run_',StartTime='2019-06-01',EndTime='2020-07-16')
+        self.getParityRunList(searchKey='Start_Parity_Run_',StartTime='2019-06-01',EndTime='2020-09-20')
 
 
 
