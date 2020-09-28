@@ -113,6 +113,17 @@ class mssget(object):
             for item in self.ReadListFile(RunListFileName=avg):
                 if len(item) != 0:
                     fileList.append(item)
+        elif '-' in avg:
+            runID=avg
+            runTempRange=runID.split('-')
+            runStart=runTempRange[0]
+            runEnd=runTempRange[-1]
+            if runStart.isdigit() and runEnd.isdigit():
+                runStart=int(runStart)
+                runEnd=int(runEnd)
+                while runStart <= runEnd:
+                    for item in self.ReadList(avg="{}".format(runStart),startRunNumber=startRunNumber,endRunNumber=endRunNumber):
+                        fileList.append(item)
         elif avg.isnumeric():
             # this is the number that want to convert into an file name
             # and get all the files in the mss
