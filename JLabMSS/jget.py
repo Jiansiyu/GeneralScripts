@@ -146,6 +146,7 @@ class mssget(object):
         
         for item in fileList:
             self.MssFileQauryList.append(item)
+            
         return fileList
 
 

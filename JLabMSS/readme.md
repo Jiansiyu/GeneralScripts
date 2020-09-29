@@ -81,6 +81,11 @@ example command
        
 ---
 
+4) get runs from range 
+```
+pytho3 jcache.py 1000-2000
+```
+ 
 ## How to change to other experiment other than PRex
 
 Just need to change the filename into filename with full path.
