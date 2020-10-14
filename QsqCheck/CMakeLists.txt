@@ -19,7 +19,7 @@ endif()
 
 #8#----------------------------------------------------------------------------
 ## Set the sources which have a corresponding .h file here
-set(sources showQsq.C  )
+set(sources showQsq.C  CheckFinalPar.C test.C)
 ## Make corresponding header files
 #string(REGEX REPLACE .cxx .h headers "${sources}")/
 ## Append a few extra header files in the repository.  (But do not append the

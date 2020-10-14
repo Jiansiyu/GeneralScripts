@@ -19,6 +19,8 @@
 #include "TCut.h"
 #include "TLatex.h"
 #include "TPaveStats.h"
+#include "vector"
+using namespace std;
 void showQsq(int run, double E){ 
 
   gROOT->Reset();
@@ -800,6 +802,5 @@ void showQsq(int run, double E){
       c1->Print(Form("%s",outfile.Data()),"pdf");
 
     }
-
   c1->Print(Form("%s]",outfile.Data()),"pdf");
 }
