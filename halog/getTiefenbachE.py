@@ -389,8 +389,8 @@ class halogCrawler(object):
                     if not 'comment_text' in entryData.keys():
                         entryData['comment_text'] = 'None'
 
-                    if not 'Tiefenbach' in entryData.keys():
-                        entryData['Tiefenbach'] = 'None'
+                    if not 'TiefenbachE' in entryData.keys():
+                        entryData['TiefenbachE'] = 'None'
 
                     if not 'beam_current' in entryData.keys():
                         entryData['beam_current'] = 'None'
@@ -404,7 +404,8 @@ class halogCrawler(object):
             print("[Worning] :: the size does not match ")
         return  decodedData
 
-
+    def write2googlesheet(self):
+        pass
 
     def getParityRunList(self, searchKey='',StartTime='',EndTime='',timeBin=datetime.timedelta(days=1)):
         '''
