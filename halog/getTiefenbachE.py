@@ -361,16 +361,14 @@ class halogCrawler(object):
                                         entryData['StartTimestamp'] = bodyItem.replace('Run Timestamp:', '')
                             if bodytext:
                                 for bodyItem in bodytext.split('\n'):
-                                    if 'Tiefenbach 6GeV Beam energy (MeV) :' in bodyItem:
-                                        entryData['TiefenbachE'] = bodyItem.replace('Tiefenbach 6GeV Beam energy (MeV) :', '')
-                                    else:
-                                        entryData['TiefenbachE'] ='None'
+                                    if 'Tiefenbach' in bodyItem and 'MeV' in bodyItem:
+                                        print(bodyItem.replace(' ','').split(':')[-1])
+                                        entryData['TiefenbachE']=bodyItem.replace(' ','').split(':')[-1]
+
                             if bodytext:
                                 for bodyItem in bodytext.split('\n'):
                                     if 'Beam Current :' in bodyItem:
                                         entryData['beam_current'] = bodyItem.replace('Beam Current :', '')
-                                    else:
-                                        entryData['beam_current'] ='None'
 
 
                     if not 'runID' in entryData.keys():
@@ -390,6 +388,12 @@ class halogCrawler(object):
 
                     if not 'comment_text' in entryData.keys():
                         entryData['comment_text'] = 'None'
+
+                    if not 'Tiefenbach' in entryData.keys():
+                        entryData['Tiefenbach'] = 'None'
+
+                    if not 'beam_current' in entryData.keys():
+                        entryData['beam_current'] = 'None'
 
                     print(entryData)
                     decodedData.append(entryData)
