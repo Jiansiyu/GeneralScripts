@@ -368,7 +368,7 @@ class halogCrawler(object):
                             if bodytext:
                                 for bodyItem in bodytext.split('\n'):
                                     if 'Beam Current :' in bodyItem:
-                                        entryData['beam_current'] = bodyItem.replace('Beam Current :', '')
+                                        entryData['beam_current'] = bodyItem.replace(' ', '').split(':')[-1]
 
 
                     if not 'runID' in entryData.keys():
