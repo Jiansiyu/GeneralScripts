@@ -265,7 +265,7 @@ class halogCrawler(object):
             return  dt_pst
 
 
-    def _writeDic2csv(self, header=['StartDate','lognumber','runID','run_type','production_target_type','optics_target_type','TiefenbachE','url','StartTimestamp','comment_text','fulltitle'],data={},filename=''):
+    def _writeDic2csv(self, header=['StartDate','lognumber','runID','run_type','production_target_type','optics_target_type','TiefenbachE','beam_current','url','StartTimestamp','comment_text','fulltitle'],data={},filename=''):
         if not filename:
             filename='text.csv'
         try:
@@ -365,6 +365,12 @@ class halogCrawler(object):
                                         entryData['TiefenbachE'] = bodyItem.replace('Tiefenbach 6GeV Beam energy (MeV) :', '')
                                     else:
                                         entryData['TiefenbachE'] ='None'
+                            if bodytext:
+                                for bodyItem in bodytext.split('\n'):
+                                    if 'Beam Current :' in bodyItem:
+                                        entryData['beam_current'] = bodyItem.replace('Beam Current :', '')
+                                    else:
+                                        entryData['beam_current'] ='None'
 
 
                     if not 'runID' in entryData.keys():
