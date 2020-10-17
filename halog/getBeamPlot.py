@@ -26,7 +26,7 @@ class beamEInfor(object):
                 if len(lines) > 10:
                     content=[x.strip() for x in lines]
                     beamEArray = [float(line.split()[-1]) for line in content]
-                    beamEArray = beamEArray[0:600]
+                    beamEArray = beamEArray#[0:600]
                     self.BeamEData[runID]=beamEArray
 
     def BeamE_SingRun(self):
