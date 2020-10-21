@@ -41,6 +41,9 @@ int main(int argc, char* argv[])
 			// macth the runs and fill the average bpm on target 
 			if(true){
 				//std::cout<<"Working on file"<< inputFilename.c_str()<<std::endl;
+
+                d[5]=0.0;
+                d[6]=0.0;
 				if(inputFilename.find("1694")!=std::string::npos){
 					//std::cout<<" run 21626 detected"<<std::endl;
 					d[5]=-0.7409;
@@ -74,6 +77,70 @@ int main(int argc, char* argv[])
                     //std::cout<<" run 21626 detected"<<std::endl;
                     d[5]=-0.7571;
                     d[6]=0.5107;
+                }
+
+                if(inputFilename.find("2550")!=std::string::npos){
+                    d[5]=-0.1086;
+                    d[6]=-0.2024;
+                }
+
+                if(inputFilename.find("2556")!=std::string::npos){
+                    d[5]=-0.1130;
+                    d[6]=-0.2025;
+                }
+
+                if(inputFilename.find("2565")!=std::string::npos){
+                    d[5]=-0.0997;
+                    d[6]=-0.1999;
+                }
+
+                if(inputFilename.find("2566")!=std::string::npos){
+                    d[5]=-0.0979;
+                    d[6]=-0.2023;
+                }
+
+                if(inputFilename.find("2239")!=std::string::npos){
+                    d[5]=3.7944;
+                    d[6]=-0.5007;
+                }
+
+                if(inputFilename.find("2240")!=std::string::npos){
+                    d[5]=-0.2004;
+                    d[6]=-0.4996;
+                }
+
+                if(inputFilename.find("2241")!=std::string::npos){
+                    d[5]=-3.2000;
+                    d[6]=-0.4986;
+                }
+
+                if(inputFilename.find("2244")!=std::string::npos){
+                    d[5]=1.7921;
+                    d[6]=-3.4975;
+                }
+
+                if(inputFilename.find("2245")!=std::string::npos){
+                    d[5]=-2.2083;
+                    d[6]=-3.4970;
+                }
+                if(inputFilename.find("2246")!=std::string::npos){
+                    d[5]=-0.1952;
+                    d[6]=-3.5004;
+                }
+
+                if(inputFilename.find("2247")!=std::string::npos){
+                    d[5]=-0.1942;
+                    d[6]=-0.4990;
+                }
+
+                if(inputFilename.find("2256")!=std::string::npos){
+                    d[5]=-0.1973;
+                    d[6]=-0.4995;
+                }
+
+                if(inputFilename.find("2257")!=std::string::npos){
+                    d[5]=-0.2005;
+                    d[6]=-0.4984;
                 }
 
 			}
