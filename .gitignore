@@ -5,3 +5,7 @@
 *.idea*
 *myenv*
 *myvenv*
+*swp
+*.o
+*.d
+*.so
