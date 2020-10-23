@@ -143,6 +143,22 @@ int main(int argc, char* argv[])
                     d[6]=-0.4984;
                 }
 
+                if(inputFilename.find("21380")!=std::string::npos){
+                    d[5]=-0.1973;
+                    d[6]=-0.4995;
+                }
+
+                if(inputFilename.find("21381")!=std::string::npos){
+                    d[5]=-0.1941;
+                    d[6]=-0.4988;
+                }
+
+                if(inputFilename.find("21364")!=std::string::npos){
+                    d[5]=-0.2005;
+                    d[6]=-0.4994;
+                }
+
+
 			}
 
         	fprintf(fp2,"%d\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\n",index,d[0],d[1],d[2],d[3],d[4],d[5]/1000.0,d[6]/1000.0,0.0);
