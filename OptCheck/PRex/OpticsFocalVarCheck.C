@@ -298,76 +298,6 @@ TVector2 getBPM(UInt_t runID,TString csvfname="bpm_on_targ.csv"){
     }
 }
 
-Int_t OpticsFocalVarCheck(UInt_t runID,TString folder="/home/newdriver/Storage/Research/CRex_Experiment/RasterReplay/Replay/Result") {
-    // prepare the data
-    TChain *chain=new TChain("T");
-    TString rootDir(folder.Data());
-    TString HRS="R";
-    if(runID>20000){ //RHRS
-        if(IsFileExist(Form("%s/prexRHRS_%d_-1.root",rootDir.Data(),runID))){
-            std::cout<<"Add File::"<<Form("%s/prexRHRS_%d_-1.root",rootDir.Data(),runID)<<std::endl;
-            chain->Add(Form("%s/prexRHRS_%d_-1.root",rootDir.Data(),runID));
-
-            TString filename;
-            int16_t split=1;
-            filename=Form("%s/prexRHRS_%d_-1_%d.root",rootDir.Data(),runID,split);
-            while (IsFileExist(filename.Data())){
-                std::cout<<"Add File::"<<filename.Data()<<std::endl;
-                chain->Add(filename.Data());
-                split++;
-                filename=Form("%s/prexRHRS_%d_-1_%d.root",rootDir.Data(),runID,split);
-            }
-        }else{
-            std::cout<<"Looking file :"<<Form("%s/prexRHRS_%d_-1.root",rootDir.Data(),runID)<<std::endl;
-        }
-    }else{
-        HRS="L";
-        if(IsFileExist(Form("%s/prexLHRS_%d_-1.root",rootDir.Data(),runID))){
-            std::cout<<"Add File::"<<Form("%s/prexLHRS_%d_-1.root",rootDir.Data(),runID)<<std::endl;
-            chain->Add(Form("%s/prexLHRS_%d_-1.root",rootDir.Data(),runID));
-
-            TString filename;
-            int16_t split=1;
-            filename=Form("%s/prexLHRS_%d_-1_%d.root",rootDir.Data(),runID,split);
-            while (IsFileExist(filename.Data())){
-                std::cout<<"Add File::"<<filename.Data()<<std::endl;
-                chain->Add(filename.Data());
-                split++;
-                filename=Form("%s/prexLHRS_%d_-1_%d.root",rootDir.Data(),runID,split);
-            }
-        }else{
-            std::cout<<"Looking file :"<<Form("%s/prexLHRS_%d_-1.root",rootDir.Data(),runID)<<std::endl;
-        }
-    }
-
-    if(HRS=="L"){
-        generalcut=generalcutL;
-    }else{
-        generalcut=generalcutR;
-    }
-
-    TCanvas *mainPatternCanvas=(TCanvas *)gROOT->GetListOfCanvases()->FindObject("cutPro");
-    if(!mainPatternCanvas){
-        mainPatternCanvas=new TCanvas("cutPro","cutPro",600,600);
-    }else{
-        mainPatternCanvas->Clear();
-    }
-//	TCanvas *mainPatternCanvas=new TCanvas("cut","cut",600,600);
-    mainPatternCanvas->Draw();
-    TH2F *TargetThPhHH=(TH2F *)gROOT->FindObject("th_vs_ph");
-    if(TargetThPhHH) TargetThPhHH->Delete();
-    TargetThPhHH=new TH2F("th_vs_ph","th_vs_ph",1000,-0.03,0.03,1000,-0.045,0.045);
-
-    chain->Project(TargetThPhHH->GetName(),Form("%s.gold.th:%s.gold.ph",HRS.Data(),HRS.Data()),generalcut.Data());
-    TargetThPhHH->Draw("zcol");
-
-    mainPatternCanvas->Update();
-    mainPatternCanvas->ToggleEventStatus();
-//	mainPatternCanvas->AddExec("ex", "DynamicCoordinates()");
-    mainPatternCanvas->AddExec("ex", "DynamicCanvas()");
-    std::cout<<"This is an test point"<<std::endl;
-    return 1;
-}
 
 double getCentralP(TChain *chain, Bool_t drawFlag=false){
 
@@ -414,6 +344,40 @@ double getCentralP(TChain *chain, Bool_t drawFlag=false){
     }
     return CentralP;
 }
+
+Int_t OpticsFocalVarCheck(UInt_t runID,TString folder="/home/newdriver/Storage/Research/PRex_Experiment/PRex_Replay/replay/Result") {
+    // prepare the data
+    TString HRS="R";
+    TChain *chain=LoadrootFile(runID,folder.Data());
+    if (runID > 20000){
+        HRS = "R";
+        generalcut = generalcutR;
+    } else{
+        HRS = "L";
+        generalcut = generalcutL;
+    }
+
+    TCanvas *mainPatternCanvas=(TCanvas *)gROOT->GetListOfCanvases()->FindObject("cutPro");
+    if(!mainPatternCanvas){
+        mainPatternCanvas=new TCanvas("cutPro","cutPro",600,600);
+    }else{
+        mainPatternCanvas->Clear();
+    }
+    mainPatternCanvas->Draw();
+    TH2F *TargetThPhHH=(TH2F *)gROOT->FindObject("th_vs_ph");
+    if(TargetThPhHH) TargetThPhHH->Delete();
+    TargetThPhHH=new TH2F("th_vs_ph","th_vs_ph",1000,-0.03,0.03,1000,-0.045,0.045);
+
+    chain->Project(TargetThPhHH->GetName(),Form("%s.gold.th:%s.gold.ph",HRS.Data(),HRS.Data()),generalcut.Data());
+    TargetThPhHH->Draw("zcol");
+
+    mainPatternCanvas->Update();
+    mainPatternCanvas->ToggleEventStatus();
+    mainPatternCanvas->AddExec("ex", "DynamicCanvas()");
+    std::cout<<"This is an test point"<<std::endl;
+    return 1;
+}
+
 
 void DynamicCanvas(){
     //check which button is clicked
