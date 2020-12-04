@@ -20,6 +20,9 @@
 #include "TROOT.h"
 #include "TGraph.h"
 #include "TCutG.h"
+#include "TFile.h"
+
+
 TString generalcut;
 TString generalcutR="R.tr.n==1 && R.vdc.u1.nclust==1&& R.vdc.v1.nclust==1 && R.vdc.u2.nclust==1 && R.vdc.v2.nclust==1";// && fEvtHdr.fEvtType==1";// && R.gold.p > 0.91 && R.gold.p < 0.98";
 TString generalcutL="L.tr.n==1 && L.vdc.u1.nclust==1&& L.vdc.v1.nclust==1 && L.vdc.u2.nclust==1 && L.vdc.v2.nclust==1";// && fEvtHdr.fEvtType==1";//  && L.gold.p > 0.91 && L.gold.p < 0.98";
@@ -174,16 +177,6 @@ struct vdcFocalVar{
 };
 
 
-
-///
-/// \param chain
-/// \return
-vdcFocalVar getFocalVar(TChain *chain){
-
-
-}
-
-
 // get the cut file
 void vdcCorrection(UInt_t runID,UInt_t maxFile=2,TString folder="/home/newdriver/Storage/Research/PRex_Experiment/PRex_Replay/replay/Result"){
     // get load the data file
@@ -238,8 +231,8 @@ void DynamicCanvas(){
     if (event!=kButton1Down) return;
 
 
-    TFile *f1=new TFile("test_temp.root","recreate");
-    assert(f1);
+//    TFile *f1=new TFile("test_temp.root","recreate");
+//    assert(f1);
 
     // link the root tree and check which HRS we are working on
     TChain *chain = (TChain *) gROOT->FindObject("T");
@@ -271,10 +264,10 @@ void DynamicCanvas(){
         SieveRecCanvas = new TCanvas("SieveRecCanvas", "Projection Canvas",
                                      1000, 1000);
 
-    SieveRecCanvas->Divide(1, 2);
-    SieveRecCanvas->cd(2)->Divide(4, 1);
+    SieveRecCanvas->Divide(1, 3);
+    SieveRecCanvas->cd(1)->Divide(4, 1);
     //get the hsitogram and start rec
-    SieveRecCanvas->cd(2)->cd(2);
+    SieveRecCanvas->cd(1)->cd(1);
 
     TH2F *selectedSievehh = (TH2F *) gROOT->FindObject("Sieve_Selected_th_ph");
     if (selectedSievehh) {
@@ -317,10 +310,13 @@ void DynamicCanvas(){
     cutg->SetVarY(Form("%s.gold.th", HRS.Data()));
     cutg->Draw("same");
 
-    // plot the cut on the canvas
-    SieveRecCanvas->cd(2)->cd(1);
 
     //load the file and apply cut on each folder
+    // load the focal plane variables
+
+
+
+
 
 
 }
