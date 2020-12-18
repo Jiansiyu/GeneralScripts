@@ -29,6 +29,7 @@
 #include <TLatex.h>
 #include <TSystem.h>
 
+
 #include <TApplication.h>
 #include <boost/filesystem.hpp>
 #include "TVector2.h"
@@ -50,8 +51,8 @@ const UInt_t NSieveRow = 7;
 //////////////////////////////////////////////////////////////////////////////
 TString prepcut;
 TString generalcut;
-TString generalcutR="R.tr.n==1 && R.vdc.u1.nclust==1&& R.vdc.v1.nclust==1 && R.vdc.u2.nclust==1 && R.vdc.v2.nclust==1 && R.gold.p > 2.14 && R.gold.p < 2.2  ";
-TString generalcutL="L.tr.n==1 && L.vdc.u1.nclust==1&& L.vdc.v1.nclust==1 && L.vdc.u2.nclust==1 && L.vdc.v2.nclust==1  && L.gold.p > 2.14 && L.gold.p < 2.2";//&& fEvtHdr.fEvtType==1
+TString generalcutR="R.tr.n==1 && R.vdc.u1.nclust==1&& R.vdc.v1.nclust==1 && R.vdc.u2.nclust==1 && R.vdc.v2.nclust==1 ";
+TString generalcutL="L.tr.n==1 ";//&& L.vdc.u1.nclust==1&& L.vdc.v1.nclust==1 && L.vdc.u2.nclust==1 && L.vdc.v2.nclust==1 ";//&& fEvtHdr.fEvtType==1
 
 inline Bool_t IsFileExist (const std::string& name) {
     return !gSystem->AccessPathName(name.c_str());
@@ -345,6 +346,11 @@ double getCentralP(TChain *chain, Bool_t drawFlag=false){
     return CentralP;
 }
 
+int getRunID(TChain *chain){
+    int runID=(int)chain->GetMaximum("fEvtHdr.fRun");
+    return  runID;
+}
+
 Int_t OpticsFocalVarCheck(UInt_t runID,TString folder="/home/newdriver/Storage/Research/PRex_Experiment/PRex_Replay/replay/Result") {
     // prepare the data
     TString HRS="R";
@@ -387,7 +393,6 @@ void DynamicCanvas(){
     int event = gPad->GetEvent();
     if (event == kNoEvent)
         return;
-
     TObject *select = gPad->GetSelected();
     if (!select)
         return;
@@ -398,8 +403,8 @@ void DynamicCanvas(){
     if (event!=kButton1Down) return;
 
 
-    TFile *f1=new TFile("test_temp.root","RECREATE");
-    assert(f1);
+//    TFile *f1=new TFile("test_temp.root","RECREATE");
+//    assert(f1);
 
     // link the root tree and check which HRS we are working on
     TChain *chain = (TChain *) gROOT->FindObject("T");
@@ -428,14 +433,13 @@ void DynamicCanvas(){
             "SieveRecCanvas");
     if (SieveRecCanvas) {
         SieveRecCanvas->Clear();
-//		delete SieveRecCanvas->GetPrimitive("Projection");
     } else
-        SieveRecCanvas = new TCanvas("SieveRecCanvas", "Projection Canvas",
-                                     1960, 1000);
+        SieveRecCanvas = new TCanvas("SieveRecCanvas", "Projection Canvas",1960, 1000);
 
     SieveRecCanvas->Divide(1, 3);
     SieveRecCanvas->cd(1)->Divide(4, 1);
     SieveRecCanvas->cd(2)->Divide(4, 1);
+    SieveRecCanvas->cd(3)->Divide(4, 1);
     //get the hsitogram and start rec
     SieveRecCanvas->cd(1)->cd(2);
 
@@ -520,10 +524,13 @@ void DynamicCanvas(){
     // project the Theta
     SieveRecCanvas->cd(2)->cd(1);
     chain->Project(focalXH->GetName(),Form("%s.tr.r_x",HRS.Data()),cutg->GetName());
-    focalXH->GetXaxis()->SetRangeUser(focalXH->GetBinCenter(focalXH->GetMaximumBin())-0.05,focalXH->GetBinCenter(focalXH->GetMaximumBin())+0.03);
+    focalXH->GetXaxis()->SetRangeUser(focalXH->GetBinCenter(focalXH->GetMaximumBin())-0.02,focalXH->GetBinCenter(focalXH->GetMaximumBin())+0.02);
     focalXH->Fit("gaus","","",focalXH->GetBinCenter(focalXH->GetMaximumBin())-0.01,focalXH->GetBinCenter(focalXH->GetMaximumBin())+0.01);
     focalXH->Draw();
     focal_x=focalXH->GetFunction("gaus")->GetParameter(1);
+    TLatex *focalXtxt =new TLatex (focalXH->GetFunction("gaus")->GetParameter(1),focalXH->GetFunction("gaus")->GetParameter(0),Form("%1.5f",focalXH->GetFunction("gaus")->GetParameter(1)));
+    focalXtxt->Draw("same");
+
 
     // project Theta Var
     SieveRecCanvas->cd(2)->cd(2);
@@ -532,6 +539,9 @@ void DynamicCanvas(){
     focalThetaH->Fit("gaus","","",focalThetaH->GetBinCenter(focalThetaH->GetMaximumBin())-0.005,focalThetaH->GetBinCenter(focalThetaH->GetMaximumBin())+0.005);
     focalThetaH->Draw();
     focal_th=focalThetaH->GetFunction("gaus")->GetParameter(1);
+    TLatex *focalThtxt = new TLatex(focalThetaH->GetFunction("gaus")->GetParameter(1),focalThetaH->GetFunction("gaus")->GetParameter(0),Form("%1.5f",focalThetaH->GetFunction("gaus")->GetParameter(1)));
+    focalThtxt->Draw("same");
+
 
     // project Y
     SieveRecCanvas->cd(2)->cd(3);
@@ -540,6 +550,8 @@ void DynamicCanvas(){
     focalYH->Fit("gaus","","",focalYH->GetBinCenter(focalYH->GetMaximumBin())-0.003,focalYH->GetBinCenter(focalYH->GetMaximumBin())+0.003);
     focalYH->Draw();
     focal_y=focalYH->GetFunction("gaus")->GetParameter(1);
+    auto focalYtxt = new TLatex(focalYH->GetFunction("gaus")->GetParameter(1),focalYH->GetFunction("gaus")->GetParameter(0),Form("%1.5f",focalYH->GetFunction("gaus")->GetParameter(1)));
+    focalYtxt->Draw("same");
 
     //project Phi
     SieveRecCanvas->cd(2)->cd(4);
@@ -548,12 +560,63 @@ void DynamicCanvas(){
     focalPhiH->Fit("gaus","","",focalPhiH->GetBinCenter(focalPhiH->GetMaximumBin())-0.003,focalPhiH->GetBinCenter(focalPhiH->GetMaximumBin())+0.003);
     focalPhiH->Draw();
     focal_ph=focalPhiH->GetFunction("gaus")->GetParameter(1);
+    auto focalPhtxt = new TLatex(focalPhiH->GetFunction("gaus")->GetParameter(1),focalPhiH->GetFunction("gaus")->GetParameter(0),Form("%1.5f",focalPhiH->GetFunction("gaus")->GetParameter(1)));
+    focalPhtxt->Draw("same");
+
+
+    // project the TRCS variables
+    TH1F *TRSCxH=new TH1F(Form("%s%d_TransX",HRS.Data(),runID),Form("%s%d_TransX",HRS.Data(),runID),
+                     3000,-1,1);
+    TH1F *TRSCyH=new TH1F(Form("%s%d_TransY",HRS.Data(),runID),Form("%s%d_TransY",HRS.Data(),runID),
+                          4000,-1,1);
+    TH1F *TRSCthH=new TH1F(Form("%s%d_TransTh",HRS.Data(),runID),Form("%s%d_TransTh",HRS.Data(),runID),
+                          3000,-1,1);
+    TH1F *TRSCphH=new TH1F(Form("%s%d_TransPh",HRS.Data(),runID),Form("%s%d_TransPh",HRS.Data(),runID),
+                          3000,-1,1);
+
+    // project the data
+    SieveRecCanvas->cd(3)->cd(1);
+    chain->Project(TRSCxH->GetName(),Form("%s.tr.x",HRS.Data()),cutg->GetName());
+    TRSCxH->GetXaxis()->SetRangeUser(TRSCxH->GetBinCenter(TRSCxH->GetMaximumBin())-0.005,TRSCxH->GetBinCenter(TRSCxH->GetMaximumBin())+0.005);
+    TRSCxH->Fit("gaus","","",TRSCxH->GetBinCenter(TRSCxH->GetMaximumBin())-0.005,TRSCxH->GetBinCenter(TRSCxH->GetMaximumBin())+0.005);
+    TRSCxH->Draw();
+    double TRSCx_val = TRSCxH -> GetFunction("gaus")->GetParameter(1);
+    TLatex *TRSCxH_txt = new TLatex(TRSCxH -> GetFunction("gaus")->GetParameter(1), TRSCxH -> GetFunction("gaus")->GetParameter(0),Form("%1.5f",TRSCxH -> GetFunction("gaus")->GetParameter(1)));
+    TRSCxH_txt->Draw("same");
+
+//    // Project the theta parameter
+    SieveRecCanvas->cd(3)->cd(2);
+    chain->Project(TRSCthH->GetName(),Form("%s.tr.th",HRS.Data()),cutg->GetName());
+    TRSCthH->GetXaxis()->SetRangeUser(TRSCthH->GetBinCenter(TRSCthH->GetMaximumBin())-0.01,TRSCthH->GetBinCenter(TRSCthH->GetMaximumBin())+0.01);
+    TRSCthH->Fit("gaus","","",TRSCthH->GetBinCenter(TRSCthH->GetMaximumBin())-0.005,TRSCthH->GetBinCenter(TRSCthH->GetMaximumBin())+0.005);
+    TRSCthH->Draw();
+    TLatex *TRSCthH_txt = new TLatex(TRSCthH->GetFunction("gaus")->GetParameter(1),TRSCthH->GetFunction("gaus")->GetParameter(0),Form("%1.5f",TRSCthH->GetFunction("gaus")->GetParameter(1)));
+    TRSCthH_txt->Draw("same");
+
+    //    //Project the Y dimension
+    SieveRecCanvas->cd(3)->cd(3);
+    chain->Project(TRSCyH->GetName(),Form("%s.tr.y",HRS.Data()),cutg->GetName());
+    TRSCyH->GetXaxis()->SetRangeUser(TRSCyH->GetBinCenter(TRSCyH->GetMaximumBin())-0.015,TRSCyH->GetBinCenter(TRSCyH->GetMaximumBin())+0.015);
+    TRSCyH->Fit("gaus","","",TRSCyH->GetBinCenter(TRSCyH->GetMaximumBin())-0.005,TRSCyH->GetBinCenter(TRSCyH->GetMaximumBin())+0.005);
+    TRSCyH->Draw();
+    TLatex *TRSCyH_txt = new TLatex(TRSCyH->GetFunction("gaus")->GetParameter(1),TRSCyH->GetFunction("gaus")->GetParameter(0),Form("%1.5f",TRSCyH->GetFunction("gaus")->GetParameter(1)));
+    TRSCyH_txt->Draw("same");
+
+
+//    //Project the Phi Parameter
+    SieveRecCanvas->cd(3)->cd(4);
+    chain->Project(TRSCphH->GetName(),Form("%s.tr.ph",HRS.Data()),cutg->GetName());
+    TRSCphH->GetXaxis()->SetRangeUser(TRSCphH->GetBinCenter(TRSCphH->GetMaximumBin())-4*TRSCphH->GetRMS(),TRSCphH->GetBinCenter(TRSCphH->GetMaximumBin())+4*TRSCphH->GetRMS());
+    TRSCphH->Fit("gaus","","",TRSCphH->GetBinCenter(TRSCphH->GetMaximumBin())-2*TRSCphH->GetRMS(),TRSCphH->GetBinCenter(TRSCphH->GetMaximumBin())+2*TRSCphH->GetRMS());
+    TRSCphH->Draw();
+    TLatex * TRSCphH_txt = new TLatex(TRSCphH->GetFunction("gaus")->GetParameter(1),TRSCphH->GetFunction("gaus")->GetParameter(0),Form("%1.5f",TRSCphH->GetFunction("gaus")->GetParameter(1)));
+    TRSCphH_txt->Draw("same");
 
     // load the bpm on target
     auto beamPos=getBPM(runID);
 
     // create file and write the information into the csv file
-    std::ofstream txtfileio("./Carbon_focal_var.txt",std::ofstream::app);
+    std::ofstream txtfileio("./Carbon_focal_var.csv",std::ofstream::app);
     auto writeStr=Form("%d  %1.5f   %1.5f   %1.5f   %1.5f   %1.5f   %1.5f",runID,focal_x,focal_th,focal_y,focal_ph,beamPos.X(),beamPos.Y());
     txtfileio<<writeStr<<std::endl;
     txtfileio.close();
