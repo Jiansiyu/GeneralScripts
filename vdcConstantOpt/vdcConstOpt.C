@@ -26,7 +26,6 @@
 using namespace std;
 using THaString::Split;
 
-
 struct vdcTrack;
 class THaMatrixElement;
 
@@ -145,7 +144,7 @@ public:
     void WriteDCSVar(double x, double theta, double y, double phi);
     void WriteTRCSVar( double x_tr, double th_tr, double y_tr,double ph_tr);
     void WriteFocalVar(double f_x, double f_th,double f_y, double f_ph);
-    double getResidualSqr(TString item);
+//    double getResidualSqr(TString item);
 
     double_t  getDX(){return  d_x;};
     double_t  getDTheta(){return  d_th;};
@@ -169,6 +168,9 @@ public:
         return (ph_f - ph_f_theor)*(ph_f - ph_f_theor);
     }
 
+    double_t getFocalResidualY(){
+        return (y_f - y_f_theor)*(y_f - y_f_theor);
+    }
     void ResetFocalVar(){
         th_f=0;
         ph_f=0;
@@ -195,6 +197,12 @@ void vdcTrack::Print() {
     std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
 }
 
+/// Write the Detector Coordination Parameters to the track, the detector coordination parameter
+/// will be used in theta_focal calculation
+/// \param x
+/// \param theta
+/// \param y
+/// \param phi
 void vdcTrack::WriteDCSVar(double x, double theta, double y, double phi) {
     d_x= x;
     d_th = theta;
@@ -225,25 +233,6 @@ void vdcTrack::WriteTRCSVar(double x, double th, double y, double ph) {
     ph_tr = ph;
     y_tr = y;
     x_tr = x;
-}
-
-void ProgressBar(double progress){
-    while (progress < 1.0) {
-        int barWidth = 70;
-
-        std::cout << "[";
-        int pos = barWidth * progress;
-        for (int i = 0; i < barWidth; ++i) {
-            if (i < pos) std::cout << "=";
-            else if (i == pos) std::cout << ">";
-            else std::cout << " ";
-        }
-        std::cout << "] " << int(progress * 100.0) << " %\r";
-        std::cout.flush();
-
-        progress += 0.16; // for demonstration only
-    }
-    std::cout << std::endl;
 }
 
 ///
@@ -438,12 +427,16 @@ Bool_t LoadDatabase(TString DataBaseName,TString fPrefix){
 }
 
 
-///
+/// Load the f51 formate raw data file
+/// data structure
+/// KineID, runID, x_d, th_d, y_d, ph_d, x_tr, th_tr, y_tr, ph_d
 /// \param rawfname
 /// \return
 Bool_t LoadRawf51(TString rawfname){
     return false;
+
 }
+
 
 
 ///
@@ -459,13 +452,9 @@ Bool_t LoadRaw(TString rawFname){
 }
 
 
-///
-/// \param item
-/// \return
-double vdcTrack::getResidualSqr(TString item) {
-    return 1.0;
-}
-
+/// Calculate the Matrix element
+/// \param x
+/// \param matrix
 void CalcMatrix(const double_t x, std::vector<THaMatrixElement> & matrix){
     // calculates the values of the matrix elements for a given location
     // by evaluating a polynomial in x of order it->order with
@@ -482,7 +471,8 @@ void CalcMatrix(const double_t x, std::vector<THaMatrixElement> & matrix){
     }
 }
 
-
+///
+/// \param track
 void CalcFocalPlaneCoords(vdcTrack* track){
     // Y: Y000 Parameter
     // theta: T
@@ -514,9 +504,6 @@ void CalcFocalPlaneCoords(vdcTrack* track){
     track->WriteFocalVar(r_x, r_theta, r_y, r_phi );
 }
 
-Bool_t calcTheoretical(){
-    return false;
-}
 
 
 inline Bool_t IsFileExist (const std::string& name) {
@@ -560,7 +547,7 @@ TCutG *getCentralSieveCut(UInt_t runID){
 }
 
 // load the root file and  return the TChain
-TChain *LoadrootFile(UInt_t runID,TString folder="/home/newdriver/Storage/Research/PRex_Experiment/PRex_Replay/replay/Result"){
+TChain *LoadrootFile(UInt_t runID,TString folder="/home/newdriver/Storage/Research/PRex_Experiment/PRex_Replay/replay/Result/20201217_vdcphCorrected"){
     TChain *chain=new TChain("T");
     TString HRS="R";
     if(runID<20000){HRS="L";};
@@ -710,14 +697,12 @@ Bool_t LoadRawRoot(UInt_t runID, UInt_t maxEvent = 5000){
             track.WriteDCSVar(L_tr_d_x[0],L_tr_d_th[0],L_tr_d_y[0],L_tr_d_ph[0]);
             vdcTrackData.push_back(track);
             EventCounter +=1;
-            if (EventCounter >= 200) break;
+            if (EventCounter >= 200) break; // set an limite on the number of event that pass the filter
         } catch (exception const &e){
             std::cout<<"[Exception]:: Ignored ->"<<e.what()<<std::endl;
             continue;
         }
     }
-
-
     return true;
 }
 
@@ -752,6 +737,10 @@ Double_t getResidual(EFPMatrixElemTag tag = T000){
         for (auto track : vdcTrackData){
             residual += track.getFocalResidualPhi();
         }
+    } else if (tag == Y000){
+        for (auto  track: vdcTrackData){
+            residual += track.getFocalResidualY();
+        }
     }
     return  residual;
 }
@@ -774,10 +763,14 @@ void OptFunctionPhi(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t)
     return;
 }
 
+
+
 void OptFunctionY(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t)
 {
-    // pass the parameter to the Optimizer Matrix
-
+    //TODO
+    //How to  get the Y000 optimization function
+    Array2Matrix(par,3, Y000);
+    f = getResidual(Y000);
 
     return;
 }
@@ -790,9 +783,12 @@ void Optimizer(EFPMatrixElemTag tag=T000, UInt_t OptOrder = 3){
 
     if (tag == P000){
         fitter->SetFCN(OptFunctionPhi);
-    } else{
+    } else if (tag == T000){
         fitter->SetFCN(OptFunctionTheta);
+    } else if (tag == Y000){
+        fitter->SetFCN(OptFunctionY);
     }
+
     // load the Optimize Parameters
     for(UInt_t ParaIter = 0 ; ParaIter < OptOrder ; ParaIter ++ ){
 
@@ -810,7 +806,7 @@ void Optimizer(EFPMatrixElemTag tag=T000, UInt_t OptOrder = 3){
 }
 
 ///
-/// \param dbname
+/// \param dbname file name that optimized database write to
 void WriteDataBase(TString dbname = "result/Optimized.db"){
     FILE *file = fopen(dbname.Data(),"w");
     if (!file) {
@@ -859,7 +855,7 @@ void vdcConstOptimizer(){
     LoadRawRoot(2257,5000);
     std::cout <<"\n Total Event After Loading File "<< vdcTrackData.size()<<std::endl;
 
-
+    Optimizer(Y000);
     Optimizer(T000);
     Optimizer(P000);
 
@@ -867,36 +863,11 @@ void vdcConstOptimizer(){
         element.print();
     }
     WriteDataBase();
-//    // start the Optimizer
-//    TVirtualFitter::SetDefaultFitter("Minuit");
-//    TVirtualFitter *fitter = TVirtualFitter::Fitter(NULL,OptOrder);
-//
-//    if (tag == P000){
-//        fitter->SetFCN(OptFunctionPhi);
-//    } else{
-//        fitter->SetFCN(OptFunctionTheta);
-//    }
-//
-//    // load the Optimize Parameters
-//    for(UInt_t ParaIter = 0 ; ParaIter < OptOrder ; ParaIter ++ ){
-//
-//        Double_t  absold =TMath::Abs(fFPMatrixElems[tag].poly[0]);
-//        Double_t abslimit = absold > 0 ? absold * 10 : 10;
-//        fitter->SetParameter(ParaIter, Form("TMatrix T000 %03d", ParaIter), fFPMatrixElems[tag].poly[ParaIter], absold > 0 ? absold / 10 : 0.1, -abslimit, abslimit);
-//
-//    }
-//    fitter->Print();
-//    cout << fitter->GetNumberFreeParameters() << " Free  / " << fitter->GetNumberTotalParameters() << " Parameters\n";
-//
-//    Double_t arglist[1] = {0};
-//    fitter->ExecuteCommand("MIGRAD", arglist, 0);
-
 }
 
 void test_focalCalculator(){
     /// Load Database tester
     LoadDatabase("PRex_LHRS.db","L");
-
     TString fname = "/home/newdriver/Storage/Research/PRex_Experiment/PRex_Replay/replay/Result/prexLHRS_2240_-1.root";
     auto fChain = new TChain("T");
     fChain->AddFile(fname.Data());
