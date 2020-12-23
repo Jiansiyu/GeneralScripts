@@ -23,6 +23,8 @@
 #include "TH2F.h"
 #include "TCanvas.h"
 #include "exception"
+#include "TBenchmark.h"
+
 using namespace std;
 using THaString::Split;
 
@@ -805,6 +807,23 @@ void Optimizer(EFPMatrixElemTag tag=T000, UInt_t OptOrder = 3){
 
 }
 
+
+
+// used for project the detector variable  to the focal plane with the new database
+/// \param f51Name the source f51 file name
+/// \param dbName  the new database filename used in the conversion
+/// \param savef51Name the file name
+void ConverterD2F(TString f51Name, TString dbName="PRex_LHRS.db", TString HRS="L", TString savef51Name=""){
+
+    // load the database
+    LoadDatabase(dbName.Data(),HRS.Data());
+
+    //
+
+
+}
+
+
 ///
 /// \param dbname file name that optimized database write to
 void WriteDataBase(TString dbname = "result/Optimized.db"){
@@ -841,12 +860,17 @@ void WriteDataBase(TString dbname = "result/Optimized.db"){
     fprintf(file, "\n");
 
     fclose(file);
+
+    std::cout << "[infor]:: database saved as "<< dbname.Data()<<std::endl;
 }
 
 
 
 /// \param Optimizer
 void vdcConstOptimizer(){
+
+    auto bench = new TBenchmark();
+    bench->Start(Form("%s",__FUNCTION__ ));
 
     LoadRawRoot(2240,5000);
     std::cout <<"\n Total Event After Loading File "<< vdcTrackData.size()<<std::endl;
@@ -863,6 +887,10 @@ void vdcConstOptimizer(){
         element.print();
     }
     WriteDataBase();
+
+    bench->Stop(Form("%s",__FUNCTION__ ));
+    bench->Print(Form("%s",__FUNCTION__ ));
+
 }
 
 void test_focalCalculator(){

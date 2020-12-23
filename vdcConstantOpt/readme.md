@@ -30,10 +30,6 @@ sieve whole again after change the t000 y000, p000 term
 ```
 
 
-# TODO 
-* Y have not been added yet(How?)
-
-
 # @ me
 - [Siyu Jian @ uva](mailto:sj9va@virginia.edu)
 
