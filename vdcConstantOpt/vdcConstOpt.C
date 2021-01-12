@@ -889,10 +889,14 @@ void vdcConstOptimizer(){
     WriteDataBase();
 
     bench->Stop(Form("%s",__FUNCTION__ ));
+    bench->GetBench(Form("%s",__FUNCTION__ ));
     bench->Print(Form("%s",__FUNCTION__ ));
 
 }
 
+
+
+///test code
 void test_focalCalculator(){
     /// Load Database tester
     LoadDatabase("PRex_LHRS.db","L");
@@ -971,7 +975,8 @@ void test_focalCalculator(){
     }
 
 }
-///
+
+///test code
 void tester(){
     /// Load Database tester
     LoadDatabase("PRex_RHRS.db","R");
@@ -983,6 +988,7 @@ void tester(){
 }
 
 
+/// test code
 /// void testMatrix
 void test_ArrayMatrix(){
 
@@ -1005,10 +1011,9 @@ void test_ArrayMatrix(){
 
 }
 
-void test_getResidual(){
 
-}
-
+/// test code
+/// \param runID
 void test_getCut(UInt_t runID = 2240){
     auto chain = LoadrootFile(runID);
     TH2F *thetaphihh = new TH2F("thetaphi","thetaphi",1000,-0.045,0.045,1000,-0.045,0.045);
