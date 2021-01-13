@@ -813,15 +813,15 @@ void Optimizer(EFPMatrixElemTag tag=T000, UInt_t OptOrder = 3){
 /// \param f51Name the source f51 file name
 /// \param dbName  the new database filename used in the conversion
 /// \param savef51Name the file name
-void ConverterD2F(TString f51Name, TString dbName="PRex_LHRS.db", TString HRS="L", TString savef51Name=""){
-
-    // load the database
-    LoadDatabase(dbName.Data(),HRS.Data());
-
-    //
-
-
-}
+//void ConverterD2F(TString f51Name, TString dbName="PRex_LHRS.db", TString HRS="L", TString savef51Name=""){
+//
+//    // load the database
+//    LoadDatabase(dbName.Data(),HRS.Data());
+//
+//    //
+//
+//
+//}
 
 
 ///
@@ -894,6 +894,11 @@ void vdcConstOptimizer(){
 
 }
 
+
+///
+void f51FocalConverter(){
+
+}
 
 
 ///test code
