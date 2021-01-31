@@ -212,6 +212,6 @@ if __name__ == "__main__":
                 print(" ----->  Getting Run Range  {}-{} /{}".format(RunRange[0],RunRange[1],int(RunRange[1])-int(RunRange[0])+1))
                 for runID in range(int(RunRange[0]),int(RunRange[1])+1):
                     print("\t --> Get {} : {}/{}".format(runID,runID-int(RunRange[0]),int(RunRange[1])-int(RunRange[0])+1))
-                    test.ReadList(avg="".format(runID))
+                    test.ReadList(avg=str(runID))
     test.GetFiles()
 
