@@ -1,5 +1,5 @@
-# jget scripts
 
+# jget/jcache script
  jget scripts used for automaticly get the data file from the mss. It can take multi-input format. It can take run number as input, it will automaticly generate RHRS or LHRS file name. It also can take filename, filename with full path or txt file which contains runlist. It also can take multi different type of input. 
 
 Input Type, all those type can be conbined together
@@ -60,6 +60,14 @@ example command
 ---
     ./jget runlist.txt      #Read file list name must end with .txt, otherwise it will not take it
 ---
+
+##### 4). run range
+Get all the runs with in range 
+exaple command 
+
+```c++
+  ./jcache 1000-2000  #run start and end seperate with '-', no space allowed in between
+```
 
 ###### format of the run list ffile 
 * it can take 1 , 2, or 3 parameters

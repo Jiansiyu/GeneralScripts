@@ -25,7 +25,7 @@ inline Bool_t IsFileExist (const std::string& name) {
     return !gSystem->AccessPathName(name.c_str());
 }
 
-TChain *LoadRootFile(UInt_t runID,UInt_t maxFile=1,TString folder="/home/newdriver/pyQuant/PRex_Backups/PRex_CutBackup/20201020_DNP_version"){
+TChain *LoadRootFile(UInt_t runID,UInt_t maxFile=1,TString folder="/home/newdriver/Storage/Research/PRex_Experiment/PRex_Replay/replay/Result"){
     TChain *chain=new TChain("T");
     TString rootDir(folder.Data());
     TString HRS="R";

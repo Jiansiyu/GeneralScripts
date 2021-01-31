@@ -128,7 +128,6 @@ class mssget(object):
                 filename=self.ReadListWNumber(runNumber=int(avg))
                 for item in filename:
                     fileList.append(item)
-        
         else:
             for item in self.ReadListWname(filename=avg):
                 fileList.append(item)
@@ -143,7 +142,6 @@ class mssget(object):
         read the file list from the input number
         '''
         filename=""
-        
         if runNumber < 20000:
             filename="{0}prexLHRS_{1}.dat".format(self.mssPath,runNumber)
             if FileSplitID != -1:
@@ -206,6 +204,14 @@ if __name__ == "__main__":
         if os.path.isdir(item):
             test.setSavePath(SavePath=item)
     for item in sys.argv[1:]:
-        test.ReadList(avg=item)
+        if item.isnumeric():
+            test.ReadList(avg=item)
+        elif '-' in item:
+            RunRange=item.split('-')
+            if RunRange[0].isnumeric() and RunRange[1].isnumeric():
+                print(" ----->  Getting Run Range  {}-{} /{}".format(RunRange[0],RunRange[1],int(RunRange[1])-int(RunRange[0])+1))
+                for runID in range(int(RunRange[0]),int(RunRange[1])+1):
+                    print("\t --> Get {} : {}/{}".format(runID,runID-int(RunRange[0]),int(RunRange[1])-int(RunRange[0])+1))
+                    test.ReadList(avg="".format(runID))
     test.GetFiles()
 
