@@ -23,7 +23,7 @@ class optDatabaseTemplateGenerator():
         self.OptConfigFname=""
         self.TargetPath=""
         self.CurrentWorkFolder=""
-        self.DBElementPrefix="T "
+        self.DBElementPrefix="P "
         self.OptTemplateFname=""
         self.LoadConfig()
         self.OptCombinationCount=0
@@ -197,7 +197,7 @@ class optDatabaseTemplateGenerator():
 
 if __name__ == "__main__":
     # runConfigFile="runConfig_test.json"
-    runConfigFile="runConfig_theta.json"
+    runConfigFile="runConfig_run.json"
     if len(sys.argv)>1:
         runConfigFile=sys.argv[1]
     

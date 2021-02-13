@@ -1,6 +1,7 @@
 '''
 Used for 
 '''
+import unicodedata
 import os
 import json
 from collections import OrderedDict
@@ -75,7 +76,7 @@ class OptScannerResult(object):
     
     def ReadSingleCheckDpResultText(self,txtResultPath=""):
         print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),0))#,float(self.OptTemplatedOptmizedFolders)/self.OptTemplateSubFolders))
-        txtFilename="{}/CheckDp_test_result.txt".format(txtResultPath)
+        txtFilename="{}/templateDB.db".format(txtResultPath)
         if os.path.isfile(txtFilename):
             with open(txtFilename) as txtFileIO:
                 result=json.load(txtFileIO)
@@ -91,7 +92,7 @@ class OptScannerResult(object):
         width, height=cover.size
         return width,height
     
-    def addimage(self, pdf=FPDF(),file1=""):
+    def addimage(self, pdf=FPDF(),file1="",item=""):
         width, height =self._getImageSize(file1)
         width, height = float(width * 0.264583), float(height * 0.264583)
         pdf_size = {'P': {'w': 210, 'h': 297}, 'L': {'w': 297, 'h': 210}}
@@ -101,8 +102,51 @@ class OptScannerResult(object):
         pdf.add_page(orientation=orientation)
         pdf.image(file1,0, 0, width, height)
         # pdf.set_font('Arial', 'B', 10)
-        #pdf.cell(0, 0, "{}".format(item),link="file:///{}".format(item))
-    
+        if item:
+            pdf.set_font('Arial', 'B', 15)
+            pdf.cell(50, -10,"[Click me to Open Folder]",link="file:///{}".format(item),ln=1,align='C')
+        if file1 and not item:
+            pdf.set_font('Arial', 'B', 10)
+            pdf.cell(10, -10, "{}".format(file1.split('/')[-2].split('_')[1]), link="file:///{}".format(item), ln=1, align='C')
+
+    def addimages(self,pdf=FPDF(),fileList=[],item=""):
+        if len(fileList)==0:
+            return None
+        width, height =self._getImageSize(fileList[0])
+        width, height = float(width * 0.264583), float(height * 0.264583)
+        pdf_size = {'P': {'w': 210, 'h': 297}, 'L': {'w': 297, 'h': 210}}
+        orientation = 'P' if width < height else 'L'
+        width = width if width < pdf_size[orientation]['w'] else pdf_size[orientation]['w']
+        height = height if height < pdf_size[orientation]['h'] else pdf_size[orientation]['h']
+        pdf.add_page(orientation=orientation)
+
+        if len(fileList) <= 4:
+            for file1 in fileList:
+                id=fileList.index(file1)
+                row=id // 2
+                col=id % 2
+                pdf.image(file1,col*width/2,row*height/2,width/2,height/2)
+        elif len(fileList) <= 6:
+            for file1 in fileList:
+                id=fileList.index(file1)
+                row=id // 2
+                col=id % 2
+                pdf.image(file1,col*width/2,row*height/3,width/2,height/3)
+                # add the file name
+                # pdf.set_font('Arial', 'B', 10)
+                # pdf.cell(width/2,10,file1.split("/")[-2],ln=0,align='C')
+        else:
+            for file1 in fileList:
+                spliter = len(fileList)//2
+                id = fileList.index(file1)
+                row = id // 2
+                col = id % 2
+                pdf.image(file1, col * width / 2, row * height / spliter, width / 2, height / spliter)
+
+        if item:
+            pdf.set_font('Arial', 'B', 10)
+            pdf.cell(50, -13,"[Click me to Open Folder]",link="file:///{}".format(item),ln=1,align='C')
+
     def addTxtFile(self, pdf=FPDF(),txtFile=""):
         if os.path.isfile(txtFile):
             pdf.add_page(orientation='P')
@@ -111,46 +155,113 @@ class OptScannerResult(object):
             for x in f:
                 if x.startswith('D'):
                     pdf.cell(200,10,txt=x,ln=1,align='L')
-    
+
+
+    def addimages_3(self,pdf=FPDF(),fileList=[],item=""):
+        if len(fileList) != 5:
+            return None
+        width, height = self._getImageSize(fileList[0])
+        width, height = float(width * 0.264583), float(height * 0.264583)
+        pdf_size = {'P': {'w': 210, 'h': 297}, 'L': {'w': 297, 'h': 210}}
+        orientation = 'P' if width < height else 'L'
+        width = width if width < pdf_size[orientation]['w'] else pdf_size[orientation]['w']
+        height = height if height < pdf_size[orientation]['h'] else pdf_size[orientation]['h']
+        pdf.add_page(orientation=orientation)
+
+        # add the first image
+        pdf.image(fileList[0], 0, 0, width, height)
+        pdf.image(fileList[1],-width*1/3,height/3,width,height)
+        pdf.set_font('Arial', 'B', 10)
+        pdf.cell(10, 130, "{}".format(fileList[1].split('/')[-2].split('_')[1]), ln=1,
+                 align='C')
+
+        pdf.image(fileList[2], width*1/3, height/3,width,height)
+        pdf.set_font('Arial', 'B', 10)
+        pdf.cell(400, -130, "{}".format(fileList[2].split('/')[-2].split('_')[1]), ln=1,
+                 align='C')
+
+        pdf.image(fileList[3], -width * 1 / 3, height*2/3, width, height)
+        pdf.image(fileList[4], width * 1 / 3, height*2/ 3, width, height)
+
+        if item:
+            pdf.set_font('Arial', 'B', 10)
+            pdf.cell(50, -13,"[Click me to Open Folder]",link="file:///{}".format(item),ln=1,align='C')
+
     def addLink(self,pdf=FPDF(), text='', link=''):
         pass
 
     def getReport(self,pdffilename='',txtResultPath=[]):
         if len(txtResultPath) == 0:
             txtResultPath=self.OptTemplatedOptmizedFolders
-            
+        txtResultPath.sort()
         bar=Bar("Processing",max=len(txtResultPath))
-        print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),0))#,float(self.OptTemplatedOptmizedFolders)/self.OptTemplateSubFolders))
+        # print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),0))#,float(self.OptTemplatedOptmizedFolders)/self.OptTemplateSubFolders))
         pdf=FPDF(orientation = 'L', unit = 'mm', format='A4')
         id=0
         for item in txtResultPath:
             self.CompileLatex(texpath=item)
-            #print("Working on file:{}".format(txtResultPath))
-            pdf.add_page()
-            pdf.set_font('Arial', 'B', 28)
-            pdf.cell(300, 50, "Run {}".format(id),ln=1,align='C')
-            id = id+1
-            pdf.cell(300, 60,"Click me to Open Folder",link="file:///{}".format(item),ln=1,align='C')
-            
-            # file1=os.path.join(item,"CheckDp_test2_DpKinDiffCanv.jpg")
-            # self.addTxtFile(pdf=pdf,txtFile=os.path.join(item,"templateDB.db.optimied"))
-            # if os.path.isfile(file1):
-            #     width, height =self._getImageSize(file1)
-            #     width, height = float(width * 0.264583), float(height * 0.264583)
-            #     pdf_size = {'P': {'w': 210, 'h': 297}, 'L': {'w': 297, 'h': 210}}
-            #     orientation = 'P' if width < height else 'L'
-            #     width = width if width < pdf_size[orientation]['w'] else pdf_size[orientation]['w']
-            #     height = height if height < pdf_size[orientation]['h'] else pdf_size[orientation]['h']
-            #     pdf.add_page(orientation=orientation)
-            #     pdf.image(file1,0, 0, width, height)
-            # pdf.set_font('Arial', 'B', 10)
+            # print("Working on file:{}".format(txtResultPath))
+            # pdf.add_page()
+            # pdf.set_font('Arial', 'B', 28)
+            # pdf.cell(300, 50, "Run {}".format(id),ln=1,align='C')
+            # id = id+1
+            # pdf.cell(300, 60,"Click me to Open Folder",link="file:///{}".format(item),ln=1,align='C')
             # pdf.cell(0, 0, "{}".format(item),link="file:///{}".format(item))
             # self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_RealMomemtumDifferenceCanv.png"))
             # self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_DpAllCanv.jpg"))
             #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_DpAllCanv.jpg"))
             #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_MomemtumOptCanv.jpg"))
             #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_DpAllCanv.jpg"))
-            self.addimage(pdf=pdf,file1=os.path.join(item,"CheckSieve_CThetaCorrectionError.jpg"))
+            # self.addimage(pdf=pdf,file1=os.path.join(item,"CheckSieve_CThetaCorrectionError.jpg"),item=item)
+            # fileList=[
+            #     os.path.join(item,"Sieve._2241_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+            #     os.path.join(item,"Sieve._2245_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+            #     os.path.join(item,"Sieve._2240_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+            #     os.path.join(item,"Sieve._2239_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg")
+            # ]
+            #
+            fileList = [
+                os.path.join(item, "Sieve._2241_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+                os.path.join(item, "Sieve._2240_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+                os.path.join(item, "Sieve._2257_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+                os.path.join(item, "Sieve._2256_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+                os.path.join(item, "Sieve._2244_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+                os.path.join(item, "Sieve._2245_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg")
+            ]
+            self.addimages(pdf=pdf,fileList=fileList,item=item)
+
+            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve.Full_LargeDataSet.f51/CheckSieve_SieveCheck2.jpg"),item=item)
+            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2239_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
+            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2241_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
+            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2244_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
+            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2245_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
+
+            fileList1 = [
+                os.path.join(item, "Sieve.Full_LargeDataSet.f51/CheckSieve_SieveCheck2.jpg"),
+                os.path.join(item, "Sieve._2241_p4.f51_reform/CheckSieve_SieveCheck2.jpg"),
+                os.path.join(item, "Sieve._2239_p4.f51_reform/CheckSieve_SieveCheck2.jpg"),
+                os.path.join(item, "Sieve._2245_p4.f51_reform/CheckSieve_SieveCheck2.jpg"),
+                os.path.join(item, "Sieve._2244_p4.f51_reform/CheckSieve_SieveCheck2.jpg")
+            ]
+            # self.addimages_3(pdf=pdf,fileList=fileList1,item=item)
+
+
+            # fileList = [
+            #     os.path.join(item, "Sieve._2241_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+            #     # os.path.join(item, "Sieve._2239_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+            #     os.path.join(item, "Sieve._2245_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+            #     os.path.join(item, "Sieve._2244_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg")
+            # ]
+            # self.addimages(pdf=pdf,fileList=fileList,item=item)
+
+            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2239_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
+            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2240_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
+            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2241_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
+            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2244_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
+            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2245_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
+            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2256_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
+            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2257_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
+            # self.addimages(pdf=pdf, fileList=fileList, item=item)
             bar.next()
         bar.finish()
         print("Creating the PDF file")
@@ -174,7 +285,7 @@ class OptScannerResult(object):
             
         
 if __name__ == "__main__":
-    test=OptScannerResult(runConfigFname="runConfig_theta.json")
+    test=OptScannerResult(runConfigFname="runConfig_run.json")
     #test.ReadCheckDpMultiThread()
     test.ReadCheckDpResultText()
     test.getReport()

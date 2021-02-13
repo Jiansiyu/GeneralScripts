@@ -1,7 +1,0 @@
-{
-  "optConfigFname": "optConfig_scanThetadb.json",
-  "optTemplateFname":"PRex_RHRS_testdb.db",
-  "TargetPath":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_Prex/result1/scan6",
-  "OptSourceFolder":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt",
-  "optScannerBashScript":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_Prex/script/optScanner_thetaphi.sh"
-}

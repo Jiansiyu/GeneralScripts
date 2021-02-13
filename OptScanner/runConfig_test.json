@@ -1,7 +1,0 @@
-{
-  "optConfigFname": "optConfig_goodversion.json",
-  "optTemplateFname":"PRex_RHRS_template.db",
-  "TargetPath":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_Prex/result1/scan1",
-  "OptSourceFolder":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt",
-  "optScannerBashScript":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_Prex/script/optScanner.sh"
-}

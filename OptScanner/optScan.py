@@ -55,8 +55,8 @@ class optScanner(object):
                 optBashCommand="{} {} {}".format(self.optScannerBashScript,self.OptSourceFolder,folderName)
                 print(optBashCommand)
                 os.system(optBashCommand)
-                
-    def MultiThreadOptimization(self, maxThread=10):
+
+    def MultiThreadOptimization(self, maxThread=15):
         threadPool=Pool(maxThread)
         threadPool.map(self.OptimizeSubFolder,self.OptTemplateSubFolders)
     
@@ -82,17 +82,12 @@ class optScanner(object):
                     txt.write("TRACK: analysis\n")
                     txt.write("COMMAND:cd {} &&{}\n".format(OptimizationPath,analyzerPath)) #rootlogon.C
                     txt.write("OPTIONS: -b -q .L {} \'{} (\'true\',\"delta\",\"\'{}\'\",\"\'{}\'\")\'\n".format(os.path.join(OptimizationPath,"rootlogon.C"),os.path.join(OptimizationPath,"ROpticsOptScript.C"),OpttemplateDB,OptimizedDBFname))
-                    #txt.write("OTHER_FILES: /lustre/expphy/work/hallb/prad/xbai/PRadSim/build/database/*\n")
-                    txt.write("JOBNAME: Brem_Simulation\n")
+                    txt.write("JOBNAME: prem_Simulation\n")
                     txt.write("MEMORY: 2 GB\n")
                     txt.write("DISK_SPACE: 10 GB\n")
-                    txt.write("OS: centos7\n")
+                    # txt.write("OS: centos7\n")
                     txt.close()
-
-                # optBashCommand="{} {} {}".format(self.optScannerBashScript,self.OptSourceFolder,folderName)
-                # print(optBashCommand)
-                # os.system(optBashCommand)
         
 if __name__ == "__main__":
-    test=optScanner(runConfigFname="runConfig_theta.json")
-    test.MultiThreadOptimization(5)
+    test=optScanner(runConfigFname="runConfig_run.json")
+    test.MultiThreadOptimization()

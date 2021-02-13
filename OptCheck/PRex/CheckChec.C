@@ -29,7 +29,10 @@ TChain *LoadRootFile(UInt_t runID,UInt_t maxFile=1,TString folder="/home/newdriv
     TChain *chain=new TChain("T");
     TString rootDir(folder.Data());
     TString HRS="R";
-    if(runID>20000){ //RHRS
+    if (runID < 20000) HRS = "L";
+    TString filePattern = Form("%s/prex%sHRS_%d_*",folder.Data(),HRS.Data(),runID);
+    chain->Add(filePattern.Data());
+/*    if(runID>20000){ //RHRS
         if(IsFileExist(Form("%s/prexRHRS_%d_-1.root",rootDir.Data(),runID))){
             std::cout<<"Add File::"<<Form("%s/prexRHRS_%d_-1.root",rootDir.Data(),runID)<<std::endl;
             chain->Add(Form("%s/prexRHRS_%d_-1.root",rootDir.Data(),runID));
@@ -66,7 +69,7 @@ TChain *LoadRootFile(UInt_t runID,UInt_t maxFile=1,TString folder="/home/newdriv
         }else{
             std::cout<<"Looking file :"<<Form("%s/prexLHRS_%d_-1.root",rootDir.Data(),runID)<<std::endl;
         }
-    }
+    }*/
     return  chain;
 }
 

@@ -60,7 +60,9 @@ echo "Opt script branch name: ${optScriptBranch}"
 
 echo "Start the Theta and Phi Optimization!!"
 analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('true',"theta","'${TemplateFname}'","'${OptimizedThetaDBFname}'")'
-analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('false',"theta","'${OptimizedThetaDBFname}'","'${OptimizedThetaDBFname}'")'
+analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('true',"phi","'${OptimizedThetaDBFname}'","'${OptimizedPhiDBFname}'")'
+#analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('false',"theta","'${OptimizedThetaDBFname}'","'${OptimizedThetaDBFname}'")'
+analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('false',"phi","'${OptimizedPhiDBFname}'","'${OptimizedDBFname}'")'
 
 #analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('true',"phi","'${OptimizedThetaDBFname}'","'${OptimizedPhiDBFname}'")'
 #analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('false',"phi","'${OptimizedThetaDBFname}'","'${OptimizedPhiDBFname}'")'
