@@ -8,16 +8,14 @@ RED=`tput setaf 1`
 GREEN=`tput setaf 2`
 NC=`tput sgr0`
 
-
-
 if [ "$#" -ne 2 ]; then
     echo "${RED}[ERROR] ${NC}Illegal number of parameters"
     echo "./optScanner.sh [OptSourcePath] [Target path(contains the db template)]"
     exit
 fi
 
-RunOptFolder=$1
-TargetFolder=$2
+RunOptFolder=$1  # the folder of the optimization code
+TargetFolder=$2  # the folder that contains the
 
 #create the template name and check the existance of the template of the database template
 TemplateFname=${TargetFolder}/templateDB.db

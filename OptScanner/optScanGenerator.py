@@ -1,12 +1,24 @@
 '''
-Used for automaticly generate the database template
+Opt Scan Template Generator
+
+* On the local PC
+
+* work on ifarm
+ -- generate the files in seperate folder
+ -- create the ifarm Job files
+ -- put the jlob files in seperate folder, ready to submit the job seperately on the ifarm
+
+TODO  in the future need to put files in different folders
 '''
 
 import os
 import json
-import time
 import sys
 from collections import OrderedDict
+from subprocess import call
+import multiprocessing
+from multiprocessing import Pool
+
 try:
     from progress.bar import Bar
 except ImportError as e:
@@ -15,6 +27,7 @@ except ImportError as e:
 from datetime import date
 from random import seed
 from random import random, randint
+import stat
 
 class optDatabaseTemplateGenerator():
 
@@ -25,10 +38,21 @@ class optDatabaseTemplateGenerator():
         self.CurrentWorkFolder=""
         self.DBElementPrefix="P "
         self.OptTemplateFname=""
-        self.LoadConfig()
         self.OptCombinationCount=0
         self.OptDBFileCount=0
-        
+        self.jobsPerNode = 100   # the concurrent jobs on each node
+        self.jobsfolder = "./"   # jlab ifarm job submit script save folder
+        self.templateFolderList =[] # the path of all the
+        self.optScannerBashScript = ""
+        self.jobsEnv = ""
+        self.LoadConfig()
+
+    def preRunCheck(self):
+        runStatusFlag = True
+        if not os.path.isfile(self.jobsEnv):
+            print("[Error]:: can not find {}".format(self.jobsEnv))
+            runStatusFlag = runStatusFlag and False
+        pass
 
     def LoadConfig(self, runConfigFname=""):
         if not runConfigFname:
@@ -36,9 +60,15 @@ class optDatabaseTemplateGenerator():
             
         with open(runConfigFname) as runCondigFile:
             self.runConfig_data=json.load(runCondigFile,object_pairs_hook=OrderedDict) # keep the initial order of the database
-            self.OptConfigFname=self.runConfig_data["optConfigFname"]
-            self.TargetPath=self.runConfig_data["TargetPath"]
-            self.OptTemplateFname=self.runConfig_data["optTemplateFname"]
+            self.OptConfigFname   = self.runConfig_data["optConfigFname"]
+            self.TargetPath       = self.runConfig_data["TargetPath"]
+            self.OptSourceFolder=self.runConfig_data["OptSourceFolder"]
+            self.optScannerBashScript=self.runConfig_data["optScannerBashScript"]
+            self.OptTemplateFname = self.runConfig_data["optTemplateFname"]
+            self.jobsPerNode      = int(self.runConfig_data["jobsPerNode"])
+            self.jobsfolder       = self.runConfig_data["jobsfolder"]
+            self.jobsEnv          = self.runConfig_data["jobsEnv"]
+
         print("{}.{}".format(self.OptConfigFname,self.TargetPath))
 
     def GenerateDBConbinations(self,jsonFname=""):
@@ -113,8 +143,12 @@ class optDatabaseTemplateGenerator():
 
     def RequestNewFolder(self):
         self.CurrentWorkFolder=self.GenerateRandomNamedFolder()
+        return  self.CurrentWorkFolder
 
     def GenerateRandomNamedFolder(self):
+        '''
+        TODO when the file exist, just recreate it instead if use a random number
+        '''
         today=date.today()
         datePreFix=today.strftime("%Y%m%d")
         # randomNumb_surFix=randint(11111111,99999999)
@@ -146,7 +180,6 @@ class optDatabaseTemplateGenerator():
     def WriteTemplate(self, workDir="./"):
         '''
         write the template database file to seperate sub-folders
-        
         '''
         
         self.ReadDatabaseTemplate(TemplateFname=self.OptTemplateFname)
@@ -154,11 +187,11 @@ class optDatabaseTemplateGenerator():
 
         bar=Bar("Genarating template",max=len(templateArray))
         for item in templateArray:
-            
             '''
             Create the folders that contines the combinations
             '''
             self.RequestNewFolder()
+            self.templateFolderList.append(self.CurrentWorkFolder)  # put the current work folder
             #Create folder that contines the combinations jsons
             with open("{}/templateJson.json".format(self.CurrentWorkFolder),"w") as jsonFileIO:
                 json.dump(item,jsonFileIO)
@@ -188,19 +221,70 @@ class optDatabaseTemplateGenerator():
             bar.next()
         bar.finish()
 
+    def createSlurmFiles(self,slurmCMD="",slurmJobfilename="",slurmJobName="PRex_Optics",slurmRunMode = "analysis"):
+        with open(slurmJobfilename,'x') as txt:
+            txt.write("PROJECT: PRex\n")
+            txt.write("TRACK: {}\n".format(slurmRunMode))
+            txt.write("COMMAND: {}\n".format(slurmCMD))
+            txt.write("JOBNAME: {}\n".format(slurmJobName))
+            txt.write("MEMORY: 4 GB\n")
+            txt.write("DISK_SPACE: 4 GB\n")
+            txt.close()
+        return True
 
-    def _IsExist_(self):
+    def generateSlurmJobs(self,workdir="./jobs"):
         '''
-        used for check whether 
+        generate the slurm run Job txt files
         '''
-        pass
+        if not self.jobsfolder:
+            self.jobsfolder = workdir
+        if not os.path.isdir(self.jobsfolder):
+            os.mkdir(self.jobsfolder)
+        self.runCMDList= set()  # buffer all the run Job script that ready to submit to the ifarm
+        for fileCounter in range(len(self.templateFolderList)):
+            jobScriptsfname = "slurmJob_{}_{}.csh".format(fileCounter//self.jobsPerNode*self.jobsPerNode,fileCounter//self.jobsPerNode*self.jobsPerNode+self.jobsPerNode)
+            jobScriptsfname = os.path.join(self.jobsfolder,jobScriptsfname)
+            with open(jobScriptsfname,"a+") as runCMDio:
+                self.runCMDList.add(jobScriptsfname)
+                if not os.access(jobScriptsfname,os.X_OK):
+                    st = os.stat(jobScriptsfname)
+                    os.chmod(jobScriptsfname,st.st_mode  | stat.S_IEXEC)
+                #check the whether the file is freshly recreated, if true, need to put the env command first
+                if runCMDio.tell() == 0:
+                    #TODO need to double check
+                    runCMDio.write("#!/bin/csh \n")
+                    runCMDio.write("source {}\n".format(self.jobsEnv))
+                runCMDio.write("{} {} {}\n".format(self.optScannerBashScript,self.OptSourceFolder, self.templateFolderList[fileCounter]))
+            runCMDio.close()
+        # finish creating bundle command that ready to send to ifarm
+        # create the job script
+        self.jobRunScriptList = []
+        for key, filename in enumerate(self.runCMDList):
+            slurmJobfilename = os.path.join(self.jobsfolder,"PRexOpt_{}.txt".format(key))
+            slurmJobMode = "analysis"
+            if key <= 10:
+                slurmJobMode = "debug"
+            self.createSlurmFiles(slurmCMD=filename,slurmJobfilename=slurmJobfilename,slurmJobName="PRexOpt_Job{}".format(key),slurmRunMode=slurmJobMode)
+            self.jobRunScriptList.append(slurmJobfilename)
+
+        #call the slurm Submit to send the jobs
+        ncores = max(10,multiprocessing.cpu_count())
+        threadPool = Pool(ncores)
+        threadPool.map(self.slurmSubmit, self.jobRunScriptList)
+
+    def slurmSubmit(self,slurmRunfilename = ""):
+        if os.path.isfile(slurmRunfilename):
+            print(slurmRunfilename)
+            if "jlab" in os.uname()[1]:
+                call(["jsub", slurmRunfilename])
+        #TODO log and exception process
+
 
 if __name__ == "__main__":
-    # runConfigFile="runConfig_test.json"
     runConfigFile="runConfig_run.json"
-    if len(sys.argv)>1:
+    if len(sys.argv)>1 and ".json" in sys.argv[1]:
         runConfigFile=sys.argv[1]
-    
+
     test=optDatabaseTemplateGenerator(runConfigFname=runConfigFile)
     test.WriteTemplate()
-    
+    test.generateSlurmJobs()

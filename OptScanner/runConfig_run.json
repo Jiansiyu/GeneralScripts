@@ -1,0 +1,11 @@
+{
+    "optConfigFname": "PRex_LHRS_scanPhi_ok_version_scan.json",
+    "optTemplateFname":"PRex_LHRS_template_updateTheta_run1.db",
+    "TargetPath":"/home/newdriver/Storage/HomeDir/Learning/GeneralScripts/OptScanner/result",
+    "OptSourceFolder":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt",
+    "optScannerBashScript":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_PRex_2021/script/optScanner_thetaphi.sh",
+    "jobsfolder": "./jobs",
+    "jobsPerNode": 100,
+    "jobsEnv": "/u/home/siyuj/env_set/setPRex.csh"
+  }
+  
