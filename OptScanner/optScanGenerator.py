@@ -168,6 +168,7 @@ class optDatabaseTemplateGenerator():
         and mark it as replayed 
         """
         return False
+
     def LogTemplateCombinations(self,combinations={}):
         pass
 
@@ -175,13 +176,20 @@ class optDatabaseTemplateGenerator():
         '''
         Single thread process generate template
         '''
-        
         pass
+
+    def _writeTemplateST(self):
+        # single thread
+        pass
+    def WriteTemplateMT(self):
+        self.ReadDatabaseTemplate(TemplateFname=self.OptTemplateFname)
+        templateArray = self.GenerateDBConbinations()
+
+
     def WriteTemplate(self, workDir="./"):
         '''
         write the template database file to seperate sub-folders
         '''
-        
         self.ReadDatabaseTemplate(TemplateFname=self.OptTemplateFname)
         templateArray=self.GenerateDBConbinations()
 
@@ -211,10 +219,8 @@ class optDatabaseTemplateGenerator():
                             templateStringRemoveLast=templateString.rsplit(' ',1)[0]
                             templateStringFinal="{} {}\n".format(templateStringRemoveLast,item[templateLine])
                             templateIO.write("{}".format(templateStringFinal))
-                            # print(self.TemplateDatabase[templateLine])
                     else:
                         templateIO.write("{}".format(self.TemplateDatabase[templateLine]))
-                        # print(self.TemplateDatabase[templateLine])
             else:
                 pass
             templateIO.close()
@@ -267,10 +273,8 @@ class optDatabaseTemplateGenerator():
             self.createSlurmFiles(slurmCMD=filename,slurmJobfilename=slurmJobfilename,slurmJobName="PRexOpt_Job{}".format(key),slurmRunMode=slurmJobMode)
             self.jobRunScriptList.append(slurmJobfilename)
 
-        #call the slurm Submit to send the jobs
-        ncores = max(10,multiprocessing.cpu_count())
-        threadPool = Pool(ncores)
-        threadPool.map(self.slurmSubmit, self.jobRunScriptList)
+        for item in self.jobRunScriptList:
+            self.slurmSubmit(slurmRunfilename=item)
 
     def slurmSubmit(self,slurmRunfilename = ""):
         if os.path.isfile(slurmRunfilename):

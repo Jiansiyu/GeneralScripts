@@ -6,15 +6,15 @@
       },
       "P 0 0 1": {
         "startOrder": "1",
-        "endOrder": "5"
+        "endOrder": "1"
       },
       "P 1 0 0": {
         "startOrder": "0",
-        "endOrder": "5"
+        "endOrder": "0"
       },
       "P 0 1 0": {
         "startOrder": "1",
-        "endOrder": "5"
+        "endOrder": "1"
       },
       "P 0 2 0": {
         "startOrder": "0",
@@ -61,11 +61,11 @@
         "endOrder": "1"
       },
       "P 0 1 2": {
-        "startOrder": "1",
-        "endOrder": "1"
+        "startOrder": "0",
+        "endOrder": "2"
       },
       "P 0 2 1": {
-        "startOrder": "3",
+        "startOrder": "0",
         "endOrder": "3"
       },
       "P 1 1 0": {
@@ -78,15 +78,15 @@
       },
       "P 2 0 1": {
         "startOrder": "0",
-        "endOrder": "0"
+        "endOrder": "3"
       },
       "P 2 1 0": {
         "startOrder": "0",
-        "endOrder": "0"
+        "endOrder": "3"
       },
       "P 2 1 1": {
-        "startOrder": "1",
-        "endOrder": "1"
+        "startOrder": "0",
+        "endOrder": "2"
       },
       "P 0 0 3": {
         "startOrder": "0",

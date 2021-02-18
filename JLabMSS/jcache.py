@@ -213,5 +213,8 @@ if __name__ == "__main__":
                 for runID in range(int(RunRange[0]),int(RunRange[1])+1):
                     print("\t --> Get {} : {}/{}".format(runID,runID-int(RunRange[0]),int(RunRange[1])-int(RunRange[0])+1))
                     test.ReadList(avg=str(runID))
+        elif item.endswith('.txt'):
+            test.ReadList(avg=item)
+
     test.GetFiles()
 
