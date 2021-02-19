@@ -152,7 +152,7 @@ class optDatabaseTemplateGenerator():
         today=date.today()
         datePreFix=today.strftime("%Y%m%d")
         # randomNumb_surFix=randint(11111111,99999999)
-        randomNumb_surFix="{:05}".format(self.OptDBFileCount)
+        randomNumb_surFix="{:06}".format(self.OptDBFileCount)
         self.OptDBFileCount=self.OptDBFileCount+1
         pathCandidate=os.path.join(self.TargetPath,'DBScan_{}_{}'.format(datePreFix,randomNumb_surFix))
         while os.path.exists(pathCandidate):
@@ -168,7 +168,6 @@ class optDatabaseTemplateGenerator():
         and mark it as replayed 
         """
         return False
-
     def LogTemplateCombinations(self,combinations={}):
         pass
 
@@ -176,20 +175,13 @@ class optDatabaseTemplateGenerator():
         '''
         Single thread process generate template
         '''
+        
         pass
-
-    def _writeTemplateST(self):
-        # single thread
-        pass
-    def WriteTemplateMT(self):
-        self.ReadDatabaseTemplate(TemplateFname=self.OptTemplateFname)
-        templateArray = self.GenerateDBConbinations()
-
-
     def WriteTemplate(self, workDir="./"):
         '''
         write the template database file to seperate sub-folders
         '''
+        
         self.ReadDatabaseTemplate(TemplateFname=self.OptTemplateFname)
         templateArray=self.GenerateDBConbinations()
 
@@ -219,8 +211,10 @@ class optDatabaseTemplateGenerator():
                             templateStringRemoveLast=templateString.rsplit(' ',1)[0]
                             templateStringFinal="{} {}\n".format(templateStringRemoveLast,item[templateLine])
                             templateIO.write("{}".format(templateStringFinal))
+                            # print(self.TemplateDatabase[templateLine])
                     else:
                         templateIO.write("{}".format(self.TemplateDatabase[templateLine]))
+                        # print(self.TemplateDatabase[templateLine])
             else:
                 pass
             templateIO.close()
@@ -268,19 +262,21 @@ class optDatabaseTemplateGenerator():
         for key, filename in enumerate(self.runCMDList):
             slurmJobfilename = os.path.join(self.jobsfolder,"PRexOpt_{}.txt".format(key))
             slurmJobMode = "analysis"
-            if key <= 10:
-                slurmJobMode = "debug"
             self.createSlurmFiles(slurmCMD=filename,slurmJobfilename=slurmJobfilename,slurmJobName="PRexOpt_Job{}".format(key),slurmRunMode=slurmJobMode)
             self.jobRunScriptList.append(slurmJobfilename)
 
-        for item in self.jobRunScriptList:
-            self.slurmSubmit(slurmRunfilename=item)
+        #call the slurm Submit to send the jobs
+        for job in self.jobRunScriptList:
+            self.slurmSubmit(slurmRunfilename=job)
+        # ncores = min(10,multiprocessing.cpu_count())
+        # threadPool = Pool(ncores)
+        # threadPool.map(self.slurmSubmit, self.jobRunScriptList)
 
     def slurmSubmit(self,slurmRunfilename = ""):
         if os.path.isfile(slurmRunfilename):
             print(slurmRunfilename)
-            if "jlab" in os.uname()[1]:
-                call(["jsub", slurmRunfilename])
+            #if "jlab" in os.uname()[1]:
+            #    call(["jsub", slurmRunfilename])
         #TODO log and exception process
 
 

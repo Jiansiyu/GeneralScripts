@@ -6,7 +6,6 @@ import os
 import json
 from collections import OrderedDict
 from progress.bar import Bar
-import datetime
 from datetime import date
 from random import seed
 from random import random, randint
@@ -17,7 +16,7 @@ from progress.bar import Bar
 import glob
 from fpdf import FPDF
 import PIL
-import sys
+
 
 class OptScannerResult(object):
     def __init__(self,runConfigFname="runConfig.json"):
@@ -30,18 +29,13 @@ class OptScannerResult(object):
         self.OptSourceFolder=""
         self.optScannerBashScript=""
         self.reportSizeLimit =200
-        self.pdfsavePath = "./Report"
         self.LoadConfig()
-
-        # get the subfolders in the given path
-        # self.GetSubFoldersFast()
-        # self.GetSubFolders()
-        self.GetSubFoldersBinTree()
+        self.GetSubFolders()
 
     def LoadConfig(self, runConfigFname=""):
         if not runConfigFname:
             runConfigFname=self.runConfigJsonFname
-        print(self.runConfigJsonFname)
+
         with open(runConfigFname) as runCondigFile:
             self.runConfig_data=json.load(runCondigFile,object_pairs_hook=OrderedDict) # keep the initial order of the database
             self.OptConfigFname=self.runConfig_data["optConfigFname"]
@@ -49,98 +43,9 @@ class OptScannerResult(object):
             self.OptSourceFolder=self.runConfig_data["OptSourceFolder"]
             self.optScannerBashScript=self.runConfig_data["optScannerBashScript"]
             self.reportSizeLimit = self.runConfig_data["reportSizeLimit"]
-            self.pdfsavePath = self.runConfig_data["pdfsavePath"]
-
-        if not os.path.isdir(self.pdfsavePath):
-            os.mkdir(self.pdfsavePath)
 
     def SetTargetFolder(self, topFolder=""):
         self.TargetPath=topFolder
-
-    def _addFolderFast(self,folder=""):
-        filename = os.path.join(folder,"templateDB.db.optimied")
-        self.OptTemplateSubFolders.append(folder)
-        if os.path.isfile(filename):
-            self.OptTemplatedOptmizedFolders.append(folder)
-
-    def _getSubFolderBT(self,mainFolderTemplate = "",startIndex = 0, endIndex = 1000000):
-        randomNumb_surFix = "{:05}".format(endIndex)
-        foldername = mainFolderTemplate.format(randomNumb_surFix)
-        while os.path.isdir(foldername):
-            endIndex = 2*endIndex
-            randomNumb_surFix = "{:05}".format(endIndex)
-            foldername = mainFolderTemplate.format(randomNumb_surFix)
-
-        start = startIndex
-        end = endIndex
-
-        while start<end:
-            mid = (start + end) // 2
-            randomNumb_surFix = "{:05}".format(mid)
-            foldername = mainFolderTemplate.format(randomNumb_surFix)
-            if os.path.isdir(foldername):
-                start = mid+1
-            else:
-                end = mid
-        return start-1
-
-    def GetSubFoldersBinTree(self,topFolder="",maxDateLookBack=10,maxFileIndex = 100000):
-        if not topFolder:
-            topFolder = self.TargetPath
-        today = date.today()
-        datePreFix = today.strftime("%Y%m%d")
-
-        for i in range(0, maxDateLookBack):
-            curr = today - datetime.timedelta(days=i)
-            folder0 = os.path.join(topFolder, "DBScan_{}_00000".format(curr.strftime("%Y%m%d")));
-            if os.path.isdir(os.path.join(topFolder, "DBScan_{}_00000".format(curr.strftime("%Y%m%d")))):
-                filenameTemplate =os.path.join(os.path.join(topFolder, "DBScan_{}".format(curr.strftime("%Y%m%d"))))
-                filenameTemplate = filenameTemplate + "_{}"
-                endIndex = self._getSubFolderBT(filenameTemplate)
-                bar = Bar("Optimization Result Looking Back {}".format(curr.strftime("%Y%m%d")), max=endIndex)
-                for runIndex in range(0,endIndex+1):
-                    randomNumb_surFix = "{:05}".format(runIndex)
-                    pathName = os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix))
-                    filename = os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix),"templateDB.db.optimied")
-                    self.OptTemplateSubFolders.append(pathName)
-                    if os.path.isfile(filename):
-                        self.OptTemplatedOptmizedFolders.append(pathName)
-                    bar.next()
-                bar.finish()
-            else:
-                print("skip folder:{}".format(folder0))
-
-        print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),
-                                                              len(self.OptTemplateSubFolders)))
-
-    def GetSubFoldersFast(self,topFolder="",maxDateLookBack=10,maxFileIndex = 100000):
-        if not topFolder:
-            topFolder=self.TargetPath
-        today=date.today()
-        datePreFix=today.strftime("%Y%m%d")
-
-        for i in range(0,maxDateLookBack):
-            curr = today - datetime.timedelta(days=i)
-            folder0 = os.path.join(topFolder,"DBScan_{}_00000".format(curr.strftime("%Y%m%d")));
-            if os.path.isdir(os.path.join(topFolder,"DBScan_{}_00000".format(curr.strftime("%Y%m%d")))):
-                bar = Bar("Optimization Result Looking Back {}".format(curr.strftime("%Y%m%d")), max=maxFileIndex)
-
-                # bin tree search instead of loop for the run one by on
-
-                for fileIndex in range(0,maxFileIndex):
-                    randomNumb_surFix = "{:05}".format(fileIndex)
-                    if os.path.isdir(os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix))):
-                        self.OptTemplateSubFolders.append(os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix)))
-                        if os.path.isfile(os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix),"templateDB.db.optimied")):
-                            self.OptTemplatedOptmizedFolders.append(os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix)))
-                            bar.next()
-                    else:
-                        break
-                bar.finish()
-            else:
-                print("skip folder:{}".format(folder0))
-
-        print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),len(self.OptTemplateSubFolders)))
 
     def GetSubFolders(self, topFolder=""):
         if not topFolder:
@@ -207,9 +112,6 @@ class OptScannerResult(object):
             pdf.cell(10, -10, "{}".format(file1.split('/')[-2].split('_')[1]), link="file:///{}".format(item), ln=1, align='C')
 
     def addimages(self,pdf=FPDF(),fileList=[],item=""):
-        for image in fileList:
-            if not os.path.isfile(image):
-                return None
         if len(fileList)==0:
             return None
         width, height =self._getImageSize(fileList[0])
@@ -287,96 +189,29 @@ class OptScannerResult(object):
             pdf.set_font('Arial', 'B', 10)
             pdf.cell(50, -13,"[Click me to Open Folder]",link="file:///{}".format(item),ln=1,align='C')
 
+    def addLink(self,pdf=FPDF(), text='', link=''):
+        pass
+
     def getLargeRunReport(self,txtResultPath=[]):
         if len(txtResultPath) == 0:
             txtResultPath=self.OptTemplatedOptmizedFolders
         txtResultPath.sort()
-
-        ResultChop = []
+        
         if len(txtResultPath) > self.reportSizeLimit:
             indexCounter = 0
             while indexCounter*self.reportSizeLimit < len(txtResultPath):
-                print("Generating Report {}/{}....".format(indexCounter+1, len(txtResultPath)//self.reportSizeLimit+1))
+                print("Generating Report {}/{}....".format(indexCounter, len(txtResultPath)))
                 headIndex = indexCounter*self.reportSizeLimit
                 tailIndex = min((indexCounter+1)*self.reportSizeLimit, len(txtResultPath))
-                currArray = txtResultPath[headIndex:tailIndex]
-                currArray.insert(0,"{}/resultScanReport_{}.pdf".format(self.pdfsavePath,indexCounter)) # the first element will be used as file name
-                ResultChop.append(currArray)
-
-                #single thread approach
-                #self.getReport(pdffilename="./Report/resultScanReport_{}.pdf".format(indexCounter),txtResultPath=txtResultPath[headIndex:tailIndex])
-
+                self.getReport(pdffilename="./Report/resultScanReport_{}.pdf".format(indexCounter),txtResultPath=txtResultPath[headIndex, tailIndex])
                 indexCounter = indexCounter + 1
         else:
             self.getReport()
-            return
-
-        # concurrnt approach
-        threadPool = Pool(8)
-        threadPool.map(self.getReportFast, ResultChop)
-
-    def getReportFast(self,txtResultPath=[]):
-
-        if len(txtResultPath) == 0:
-            txtResultPath = self.OptTemplatedOptmizedFolders
-
-        pdffilename = './resultScanReport.pdf'
-
-        if ".pdf" in txtResultPath[0]:
-            pdffilename = txtResultPath[0]
-            txtResultPath = txtResultPath[1:]
-        txtResultPath.sort()
-
-        bar = Bar("Processing", max=len(txtResultPath))
-        pdf = FPDF(orientation='L', unit='mm', format='A4')
-        id = 0
-        for item in txtResultPath:
-            self.CompileLatex(texpath=item)
-            fileList = [
-                os.path.join(item, "Sieve._2241_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
-                os.path.join(item, "Sieve._2240_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
-                os.path.join(item, "Sieve._2257_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
-                os.path.join(item, "Sieve._2256_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
-                os.path.join(item, "Sieve._2244_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
-                os.path.join(item, "Sieve._2245_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg")
-            ]
-            # self.addimages(pdf=pdf, fileList=fileList, item=item)
-
-            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve.Full_LargeDataSet.f51/CheckSieve_SieveCheck2.jpg"),item=item)
-            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2239_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
-            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2241_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
-            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2244_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
-            # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2245_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
-
-            fileList1 = [
-                os.path.join(item, "Sieve.Full_LargeDataSet.f51/CheckSieve_SieveCheck2.jpg"),
-                os.path.join(item, "Sieve._2241_p4.f51_reform/CheckSieve_SieveCheck2.jpg"),
-                os.path.join(item, "Sieve._2239_p4.f51_reform/CheckSieve_SieveCheck2.jpg"),
-                os.path.join(item, "Sieve._2245_p4.f51_reform/CheckSieve_SieveCheck2.jpg"),
-                os.path.join(item, "Sieve._2244_p4.f51_reform/CheckSieve_SieveCheck2.jpg")
-            ]
-            self.addimages_3(pdf=pdf,fileList=fileList1,item=item)
-
-            # fileList = [
-            #     os.path.join(item, "Sieve._2241_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
-            #     # os.path.join(item, "Sieve._2239_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
-            #     os.path.join(item, "Sieve._2245_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
-            #     os.path.join(item, "Sieve._2244_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg")
-            # ]
-            # self.addimages(pdf=pdf,fileList=fileList,item=item)
-            bar.next()
-        bar.finish()
-        print("Creating the PDF file")
-        pdf.output(pdffilename, "F")
-        shutil.copyfile(pdffilename, os.path.join(self.TargetPath, "report.pdf"))
-        pass
 
     def getReport(self,pdffilename='./resultScanReport.pdf',txtResultPath=[]):
         if len(txtResultPath) == 0:
             txtResultPath=self.OptTemplatedOptmizedFolders
-
         txtResultPath.sort()
-
         bar=Bar("Processing",max=len(txtResultPath))
         # print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),0))#,float(self.OptTemplatedOptmizedFolders)/self.OptTemplateSubFolders))
         pdf=FPDF(orientation = 'L', unit = 'mm', format='A4')
@@ -470,9 +305,9 @@ class OptScannerResult(object):
 if __name__ == "__main__":
     runConfigFname="runConfig_run.json"
     if len(sys.argv)>1 and ".json" in sys.argv[1]:
-        runConfigFname=sys.argv[1]
+        runConfigFile=sys.argv[1]
 
     test=OptScannerResult(runConfigFname=runConfigFname)
-    # test.ReadCheckDpResultText()
-    test.getLargeRunReport()  # construct the pdf file concurrently
-    # test.getReport()
+    test.ReadCheckDpResultText()
+    test.getLargeRunReport()
+    #test.getReport()

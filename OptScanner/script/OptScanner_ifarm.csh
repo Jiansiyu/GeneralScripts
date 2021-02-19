@@ -1,5 +1,5 @@
 #! /bin/csh
-
+source /u/home/siyuj/env_set/setPRex.csh
 # template bash script used for scan single folder
 # input: $2 target folder than contains the databse template subfolder
 # input: $1 the source folder of the opt code, the code will go into the code, and start the scripts
@@ -46,9 +46,9 @@ endif
 echo "go into folder ${RunOptFolder}"
 cd ${RunOptFolder}
 
-optScriptBranch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+#set optScriptBranch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 
-echo "Opt script branch name: ${optScriptBranch}"
+#echo "Opt script branch name: ${optScriptBranch}"
 
 echo "Start the Theta and Phi Optimization!!"
 analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('true',"theta","'${TemplateFname}'","'${OptimizedThetaDBFname}'")'

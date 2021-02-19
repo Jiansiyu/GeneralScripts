@@ -50,7 +50,7 @@
       },
       "P 3 0 1": {
         "startOrder": "0",
-        "endOrder": "0"
+        "endOrder": "3"
       },
       "P 0 0 2": {
         "startOrder": "1",
@@ -73,8 +73,8 @@
         "endOrder": "3"
       },
       "P 1 0 1": {
-        "startOrder": "1",
-        "endOrder": "1"
+        "startOrder": "0",
+        "endOrder": "3"
       },
       "P 2 0 1": {
         "startOrder": "0",

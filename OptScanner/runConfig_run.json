@@ -1,11 +1,12 @@
 {
     "optConfigFname": "PRex_LHRS_scanPhi_ok_version_scan.json",
     "optTemplateFname":"PRex_LHRS_template_updateTheta_run1.db",
-    "TargetPath":"/work/halla/parity/disk1/siyu/OptScan/OptScanner/Result",
+    "TargetPath":"/work/halla/parity/disk1/siyu/OptScan/OptScanner/Result/Run4",
     "OptSourceFolder":"/work/halla/parity/disk1/siyu/OptScan/Opt",
     "optScannerBashScript":"/work/halla/parity/disk1/siyu/OptScan/OptScanner/script/OptScanner_ifarm.csh",
     "jobsfolder": "/work/halla/parity/disk1/siyu/OptScan/OptScanner/job",
-    "jobsPerNode": 100,
-    "jobsEnv": "/u/home/siyuj/env_set/setPRex.csh"
+    "jobsPerNode": 200,
+    "jobsEnv": "/u/home/siyuj/env_set/setPRex.csh",
+    "reportSizeLimit":200
   }
   
