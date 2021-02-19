@@ -196,6 +196,11 @@ class optDatabaseTemplateGenerator():
             self.RequestNewFolder()
             self.templateFolderList.append(self.CurrentWorkFolder)  # put the current work folder
             #Create folder that contines the combinations jsons
+            # check the existance of the files
+            templatefilename = "{}/templateJson.json".format(self.CurrentWorkFolder)
+            if os.path.isfile(templatefilename):
+                continue
+
             with open("{}/templateJson.json".format(self.CurrentWorkFolder),"w") as jsonFileIO:
                 json.dump(item,jsonFileIO)
             jsonFileIO.close()
@@ -231,7 +236,7 @@ class optDatabaseTemplateGenerator():
             txt.write("COMMAND: {}\n".format(slurmCMD))
             txt.write("JOBNAME: {}\n".format(slurmJobName))
             txt.write("MEMORY: 4 GB\n")
-            txt.write("CPU: {}\n".format(self.coresPerNode))
+            txt.write("CPU : {}\n".format(self.coresPerNode))
             txt.write("DISK_SPACE: 4 GB\n")
             txt.close()
         return True
@@ -259,11 +264,10 @@ class optDatabaseTemplateGenerator():
                     os.chmod(jobScriptsfname, st.st_mode | stat.S_IEXEC)
                 runCMDio.write("#!/bin/csh \n")
                 runCMDio.write("source {}\n".format(self.jobsEnv))
-
                 runCMDio.write("set startRunID = {}\n".format(fileCounter))
                 runCMDio.write("set endRunID = {}\n".format(endRunID))
                 runCMDio.write("set ncores = {}\n".format(self.coresPerNode))
-                runCMDio.write("seq -f %06g $startRunID $endRunID | xargs -i --max-procs=$ncores bash -c \"{} {} {}_{{}}\"\n".format(self.optScannerBashScript,self.OptSourceFolder,self.templateFolderList[fileCounter][:-6]))
+                runCMDio.write("seq -f %06g $startRunID $endRunID | xargs -i --max-procs=$ncores bash -c \"{} {} {}_{{}} > /dev/null\"\n".format(self.optScannerBashScript,self.OptSourceFolder,self.templateFolderList[fileCounter][:-7]))
                 runCMDio.close()
             fileCounter= endRunID
         # finish creating bundle command that ready to send to ifarm
