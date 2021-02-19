@@ -45,6 +45,7 @@ class optDatabaseTemplateGenerator():
         self.templateFolderList =[] # the path of all the
         self.optScannerBashScript = ""
         self.jobsEnv = ""
+        self.coresPerNode = 4
         self.LoadConfig()
 
     def preRunCheck(self):
@@ -68,6 +69,7 @@ class optDatabaseTemplateGenerator():
             self.jobsPerNode      = int(self.runConfig_data["jobsPerNode"])
             self.jobsfolder       = self.runConfig_data["jobsfolder"]
             self.jobsEnv          = self.runConfig_data["jobsEnv"]
+            self.coresPerNode     = self.runConfig_data["coresPerNode"]
 
         print("{}.{}".format(self.OptConfigFname,self.TargetPath))
 
@@ -228,6 +230,7 @@ class optDatabaseTemplateGenerator():
             txt.write("COMMAND: {}\n".format(slurmCMD))
             txt.write("JOBNAME: {}\n".format(slurmJobName))
             txt.write("MEMORY: 4 GB\n")
+            txt.write("CPU: {}\n".format(self.coresPerNode))
             txt.write("DISK_SPACE: 4 GB\n")
             txt.close()
         return True
@@ -241,21 +244,26 @@ class optDatabaseTemplateGenerator():
         if not os.path.isdir(self.jobsfolder):
             os.mkdir(self.jobsfolder)
         self.runCMDList= set()  # buffer all the run Job script that ready to submit to the ifarm
-        for fileCounter in range(len(self.templateFolderList)):
-            jobScriptsfname = "slurmJob_{}_{}.csh".format(fileCounter//self.jobsPerNode*self.jobsPerNode,fileCounter//self.jobsPerNode*self.jobsPerNode+self.jobsPerNode)
-            jobScriptsfname = os.path.join(self.jobsfolder,jobScriptsfname)
-            with open(jobScriptsfname,"a+") as runCMDio:
+
+        fileCounter = 0
+        while fileCounter < len(self.templateFolderList):
+            jobScriptsfname = "slurmJob_{}_{}.csh".format(fileCounter // self.jobsPerNode * self.jobsPerNode,
+                                                          fileCounter // self.jobsPerNode * self.jobsPerNode + self.jobsPerNode)
+            jobScriptsfname = os.path.join(self.jobsfolder, jobScriptsfname)
+            endRunID = fileCounter // self.jobsPerNode * self.jobsPerNode + self.jobsPerNode
+            with open(jobScriptsfname, "w") as runCMDio:
                 self.runCMDList.add(jobScriptsfname)
-                if not os.access(jobScriptsfname,os.X_OK):
+                if not os.access(jobScriptsfname, os.X_OK):
                     st = os.stat(jobScriptsfname)
-                    os.chmod(jobScriptsfname,st.st_mode  | stat.S_IEXEC)
-                #check the whether the file is freshly recreated, if true, need to put the env command first
-                if runCMDio.tell() == 0:
-                    #TODO need to double check
-                    runCMDio.write("#!/bin/csh \n")
-                    runCMDio.write("source {}\n".format(self.jobsEnv))
-                runCMDio.write("{} {} {}\n".format(self.optScannerBashScript,self.OptSourceFolder, self.templateFolderList[fileCounter]))
-            runCMDio.close()
+                    os.chmod(jobScriptsfname, st.st_mode | stat.S_IEXEC)
+                runCMDio.write("#!/bin/csh \n")
+                runCMDio.write("source {}\n".format(self.jobsEnv))
+
+                runCMDio.write("set startRunID = {}".format(fileCounter))
+                runCMDio.write("set endRunID = {}".format(endRunID-1))
+                runCMDio.write("set ncores = {}".format(self.coresPerNode))
+                runCMDio.write("seq -f %06g $startRunID $endRunID | xargs -i --max-procs=$ncores bash -c \"{} {} {}_{{}}\"".format(self.optScannerBashScript,self.OptSourceFolder,self.templateFolderList[fileCounter][:-6]))
+                runCMDio.close()
         # finish creating bundle command that ready to send to ifarm
         # create the job script
         self.jobRunScriptList = []

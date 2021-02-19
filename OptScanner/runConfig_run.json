@@ -6,6 +6,7 @@
     "optScannerBashScript":"/work/halla/parity/disk1/siyu/OptScan/OptScanner/script/OptScanner_ifarm.csh",
     "jobsfolder": "/work/halla/parity/disk1/siyu/OptScan/OptScanner/job",
     "jobsPerNode": 200,
+    "coresPerNode": 4,
     "jobsEnv": "/u/home/siyuj/env_set/setPRex.csh",
     "reportSizeLimit":200
   }
