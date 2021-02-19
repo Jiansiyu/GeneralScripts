@@ -157,10 +157,11 @@ class optDatabaseTemplateGenerator():
         randomNumb_surFix="{:06}".format(self.OptDBFileCount)
         self.OptDBFileCount=self.OptDBFileCount+1
         pathCandidate=os.path.join(self.TargetPath,'DBScan_{}_{}'.format(datePreFix,randomNumb_surFix))
-        while os.path.exists(pathCandidate):
-            randomNumb_surFix=randint(111111111,99999999999)
-            pathCandidate=os.path.join("",self.TargetPath,'DBScan_{}_{}'.format(datePreFix,randomNumb_surFix))
-        os.makedirs(pathCandidate)
+        # while os.path.exists(pathCandidate):
+        #     randomNumb_surFix=randint(111111111,99999999999)
+        #     pathCandidate=os.path.join("",self.TargetPath,'DBScan_{}_{}'.format(datePreFix,randomNumb_surFix))
+        if not os.path.isdir(pathCandidate):
+            os.makedirs(pathCandidate)
         return pathCandidate
 
     def CheckCombinationExist(self,combinations={}):
@@ -259,11 +260,12 @@ class optDatabaseTemplateGenerator():
                 runCMDio.write("#!/bin/csh \n")
                 runCMDio.write("source {}\n".format(self.jobsEnv))
 
-                runCMDio.write("set startRunID = {}".format(fileCounter))
-                runCMDio.write("set endRunID = {}".format(endRunID-1))
-                runCMDio.write("set ncores = {}".format(self.coresPerNode))
-                runCMDio.write("seq -f %06g $startRunID $endRunID | xargs -i --max-procs=$ncores bash -c \"{} {} {}_{{}}\"".format(self.optScannerBashScript,self.OptSourceFolder,self.templateFolderList[fileCounter][:-6]))
+                runCMDio.write("set startRunID = {}\n".format(fileCounter))
+                runCMDio.write("set endRunID = {}\n".format(endRunID))
+                runCMDio.write("set ncores = {}\n".format(self.coresPerNode))
+                runCMDio.write("seq -f %06g $startRunID $endRunID | xargs -i --max-procs=$ncores bash -c \"{} {} {}_{{}}\"\n".format(self.optScannerBashScript,self.OptSourceFolder,self.templateFolderList[fileCounter][:-6]))
                 runCMDio.close()
+            fileCounter= endRunID
         # finish creating bundle command that ready to send to ifarm
         # create the job script
         self.jobRunScriptList = []

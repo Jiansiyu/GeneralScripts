@@ -1,5 +1,5 @@
 {
-    "optConfigFname": "PRex_LHRS_scanPhi_ok_version_scan.json",
+    "optConfigFname": "PRex_LHRS_scanPhi_ok_version_scan_localTest.json",
     "optTemplateFname":"PRex_LHRS_template_updateTheta_run1.db",
     "TargetPath":"./result/Run4",
     "OptSourceFolder":"/work/halla/parity/disk1/siyu/OptScan/Opt",
