@@ -180,6 +180,7 @@ class optDatabaseTemplateGenerator():
         '''
         
         pass
+
     def WriteTemplate(self, workDir="./"):
         '''
         write the template database file to seperate sub-folders
