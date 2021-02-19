@@ -23,7 +23,7 @@ try:
     from progress.bar import Bar
 except ImportError as e:
     pass
-
+import datetime
 from datetime import date
 from random import seed
 from random import random, randint
@@ -46,6 +46,7 @@ class optDatabaseTemplateGenerator():
         self.optScannerBashScript = ""
         self.jobsEnv = ""
         self.coresPerNode = 4
+        self.folderIndexTemplate = "{:06}"
         self.LoadConfig()
 
     def preRunCheck(self):
@@ -70,6 +71,7 @@ class optDatabaseTemplateGenerator():
             self.jobsfolder       = self.runConfig_data["jobsfolder"]
             self.jobsEnv          = self.runConfig_data["jobsEnv"]
             self.coresPerNode     = self.runConfig_data["coresPerNode"]
+
 
         print("{}.{}".format(self.OptConfigFname,self.TargetPath))
 
@@ -153,6 +155,7 @@ class optDatabaseTemplateGenerator():
         '''
         today=date.today()
         datePreFix=today.strftime("%Y%m%d")
+        datePreFix = '20210218'
         # randomNumb_surFix=randint(11111111,99999999)
         randomNumb_surFix="{:06}".format(self.OptDBFileCount)
         self.OptDBFileCount=self.OptDBFileCount+1
@@ -181,13 +184,62 @@ class optDatabaseTemplateGenerator():
         
         pass
 
+    def _getSubFolderBT(self,mainFolderTemplate = "",startIndex = 0, endIndex = 1000000):
+        randomNumb_surFix = self.folderIndexTemplate.format(endIndex)
+        foldername = mainFolderTemplate.format(randomNumb_surFix)
+        while os.path.isdir(foldername):
+            endIndex = 2*endIndex
+            randomNumb_surFix = self.folderIndexTemplate.format(endIndex)
+            foldername = mainFolderTemplate.format(randomNumb_surFix)
+
+        start = startIndex
+        end = endIndex
+
+        while start<end:
+            mid = (start + end) // 2
+            randomNumb_surFix = self.folderIndexTemplate.format(mid)
+            foldername = mainFolderTemplate.format(randomNumb_surFix)
+            if os.path.isdir(foldername):
+                start = mid+1
+            else:
+                end = mid
+        return start-1
+
+    def GetSubFoldersBinTree(self,topFolder="",maxDateLookBack=10):
+        if not topFolder:
+            topFolder = self.TargetPath
+        today = date.today()
+        datePreFix = today.strftime("%Y%m%d")
+
+        for i in range(0, maxDateLookBack):
+            curr = today - datetime.timedelta(days=i)
+            folder0 = os.path.join(topFolder, "DBScan_{}_000000".format(curr.strftime("%Y%m%d")));
+            if os.path.isdir(os.path.join(topFolder, "DBScan_{}_000000".format(curr.strftime("%Y%m%d")))):
+                filenameTemplate =os.path.join(os.path.join(topFolder, "DBScan_{}".format(curr.strftime("%Y%m%d"))))
+                filenameTemplate = filenameTemplate + "_{}"
+                endIndex = self._getSubFolderBT(filenameTemplate)
+                bar = Bar("Optimization Result Looking Back {}".format(curr.strftime("%Y%m%d")), max=endIndex)
+                for runIndex in range(0,endIndex+1):
+                    randomNumb_surFix = self.folderIndexTemplate.format(runIndex)
+                    pathName = os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix))
+                    #filename = os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix),"templateDB.db.optimied")
+                    self.templateFolderList.append(pathName)
+                    bar.next()
+                bar.finish()
+            else:
+                print("skip folder:{}".format(folder0))
+
+
     def WriteTemplate(self, workDir="./"):
         '''
         write the template database file to seperate sub-folders
         '''
-        
         self.ReadDatabaseTemplate(TemplateFname=self.OptTemplateFname)
         templateArray=self.GenerateDBConbinations()
+
+        if any([True for _ in os.scandir(self.TargetPath)]):
+            self.GetSubFoldersBinTree(topFolder=self.TargetPath)
+            return
 
         bar=Bar("Genarating template",max=len(templateArray))
         for item in templateArray:
