@@ -8,6 +8,7 @@
     "jobsPerNode": 200,
     "coresPerNode": 4,
     "jobsEnv": "/u/home/siyuj/env_set/setPRex.csh",
-    "reportSizeLimit":200
+    "reportSizeLimit":200,
+    "pdfsavePath":"./report"
   }
   

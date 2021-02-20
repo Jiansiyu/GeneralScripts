@@ -32,7 +32,6 @@ class OptScannerResult(object):
         self.reportSizeLimit =200
         self.pdfsavePath = "./Report"
         self.LoadConfig()
-
         # get the subfolders in the given path
         # self.GetSubFoldersFast()
         # self.GetSubFolders()
@@ -103,8 +102,9 @@ class OptScannerResult(object):
                     pathName = os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix))
                     filename = os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix),"templateDB.db.optimied")
                     self.OptTemplateSubFolders.append(pathName)
-                    if os.path.isfile(filename):
-                        self.OptTemplatedOptmizedFolders.append(pathName)
+                    self.OptTemplatedOptmizedFolders.append(pathName)
+                    # if os.path.isfile(filename):
+                    #     self.OptTemplatedOptmizedFolders.append(pathName)
                     bar.next()
                 bar.finish()
             else:
@@ -260,6 +260,9 @@ class OptScannerResult(object):
     def addimages_3(self,pdf=FPDF(),fileList=[],item=""):
         if len(fileList) != 5:
             return None
+        for item in fileList:
+            if not os.path.isfile(item):
+                return None
         width, height = self._getImageSize(fileList[0])
         width, height = float(width * 0.264583), float(height * 0.264583)
         pdf_size = {'P': {'w': 210, 'h': 297}, 'L': {'w': 297, 'h': 210}}
@@ -288,6 +291,10 @@ class OptScannerResult(object):
             pdf.cell(50, -13,"[Click me to Open Folder]",link="file:///{}".format(item),ln=1,align='C')
 
     def getLargeRunReport(self,txtResultPath=[]):
+        '''
+
+        '''
+
         if len(txtResultPath) == 0:
             txtResultPath=self.OptTemplatedOptmizedFolders
         txtResultPath.sort()
@@ -302,17 +309,13 @@ class OptScannerResult(object):
                 currArray = txtResultPath[headIndex:tailIndex]
                 currArray.insert(0,"{}/resultScanReport_{}.pdf".format(self.pdfsavePath,indexCounter)) # the first element will be used as file name
                 ResultChop.append(currArray)
-
-                #single thread approach
-                #self.getReport(pdffilename="./Report/resultScanReport_{}.pdf".format(indexCounter),txtResultPath=txtResultPath[headIndex:tailIndex])
-
                 indexCounter = indexCounter + 1
         else:
             self.getReport()
             return
 
         # concurrnt approach
-        threadPool = Pool(8)
+        threadPool = Pool(80)
         threadPool.map(self.getReportFast, ResultChop)
 
     def getReportFast(self,txtResultPath=[]):

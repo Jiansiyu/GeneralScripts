@@ -43,6 +43,12 @@ if ( ! -f "${TemplateFname}" ) then
     exit
 endif
 
+if ( ! -f "${OptimizedDBFname}" ) then
+    echo "${GREEN}[WARNING] ${NC} Optimized skip this folder"
+    exit
+endif
+
+
 echo "go into folder ${RunOptFolder}"
 cd ${RunOptFolder}
 

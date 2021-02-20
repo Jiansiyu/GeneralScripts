@@ -288,9 +288,9 @@ class optDatabaseTemplateGenerator():
             txt.write("TRACK: {}\n".format(slurmRunMode))
             txt.write("COMMAND: {}\n".format(slurmCMD))
             txt.write("JOBNAME: {}\n".format(slurmJobName))
-            txt.write("MEMORY: 4 GB\n")
+            txt.write("MEMORY: {} GB\n".format(self.coresPerNode*3))
             txt.write("CPU : {}\n".format(self.coresPerNode))
-            txt.write("DISK_SPACE: 4 GB\n")
+            txt.write("DISK_SPACE: {} GB\n".format(self.coresPerNode*4))
             txt.close()
         return True
 
