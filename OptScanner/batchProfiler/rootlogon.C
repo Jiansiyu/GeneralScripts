@@ -1,0 +1,3 @@
+{
+	gROOT->LoadMacro("profiler.C");
+}

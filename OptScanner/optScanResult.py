@@ -31,6 +31,7 @@ class OptScannerResult(object):
         self.optScannerBashScript=""
         self.reportSizeLimit =200
         self.pdfsavePath = "./Report"
+        self.folderIndexTemplate = "{:06}"
         self.LoadConfig()
         # get the subfolders in the given path
         # self.GetSubFoldersFast()
@@ -63,11 +64,11 @@ class OptScannerResult(object):
             self.OptTemplatedOptmizedFolders.append(folder)
 
     def _getSubFolderBT(self,mainFolderTemplate = "",startIndex = 0, endIndex = 1000000):
-        randomNumb_surFix = "{:05}".format(endIndex)
+        randomNumb_surFix = self.folderIndexTemplate.format(endIndex)
         foldername = mainFolderTemplate.format(randomNumb_surFix)
         while os.path.isdir(foldername):
             endIndex = 2*endIndex
-            randomNumb_surFix = "{:05}".format(endIndex)
+            randomNumb_surFix = self.folderIndexTemplate.format(endIndex)
             foldername = mainFolderTemplate.format(randomNumb_surFix)
 
         start = startIndex
@@ -75,7 +76,7 @@ class OptScannerResult(object):
 
         while start<end:
             mid = (start + end) // 2
-            randomNumb_surFix = "{:05}".format(mid)
+            randomNumb_surFix = self.folderIndexTemplate.format(mid)
             foldername = mainFolderTemplate.format(randomNumb_surFix)
             if os.path.isdir(foldername):
                 start = mid+1
@@ -91,14 +92,14 @@ class OptScannerResult(object):
 
         for i in range(0, maxDateLookBack):
             curr = today - datetime.timedelta(days=i)
-            folder0 = os.path.join(topFolder, "DBScan_{}_00000".format(curr.strftime("%Y%m%d")));
-            if os.path.isdir(os.path.join(topFolder, "DBScan_{}_00000".format(curr.strftime("%Y%m%d")))):
+            folder0 = os.path.join(topFolder, "DBScan_{}_{}".format(curr.strftime("%Y%m%d"),self.folderIndexTemplate.format(0)));
+            if os.path.isdir(os.path.join(topFolder, "DBScan_{}_{}".format(curr.strftime("%Y%m%d"),self.folderIndexTemplate.format(0)))):
                 filenameTemplate =os.path.join(os.path.join(topFolder, "DBScan_{}".format(curr.strftime("%Y%m%d"))))
                 filenameTemplate = filenameTemplate + "_{}"
                 endIndex = self._getSubFolderBT(filenameTemplate)
                 bar = Bar("Optimization Result Looking Back {}".format(curr.strftime("%Y%m%d")), max=endIndex)
                 for runIndex in range(0,endIndex+1):
-                    randomNumb_surFix = "{:05}".format(runIndex)
+                    randomNumb_surFix = self.folderIndexTemplate.format(runIndex)
                     pathName = os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix))
                     filename = os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix),"templateDB.db.optimied")
                     self.OptTemplateSubFolders.append(pathName)
@@ -121,14 +122,14 @@ class OptScannerResult(object):
 
         for i in range(0,maxDateLookBack):
             curr = today - datetime.timedelta(days=i)
-            folder0 = os.path.join(topFolder,"DBScan_{}_00000".format(curr.strftime("%Y%m%d")));
-            if os.path.isdir(os.path.join(topFolder,"DBScan_{}_00000".format(curr.strftime("%Y%m%d")))):
+            folder0 = os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),self.folderIndexTemplate.format(0)));
+            if os.path.isdir(os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),self.folderIndexTemplate.format(0)))):
                 bar = Bar("Optimization Result Looking Back {}".format(curr.strftime("%Y%m%d")), max=maxFileIndex)
 
                 # bin tree search instead of loop for the run one by on
 
                 for fileIndex in range(0,maxFileIndex):
-                    randomNumb_surFix = "{:05}".format(fileIndex)
+                    randomNumb_surFix = self.folderIndexTemplate.format(fileIndex)
                     if os.path.isdir(os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix))):
                         self.OptTemplateSubFolders.append(os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix)))
                         if os.path.isfile(os.path.join(topFolder,"DBScan_{}_{}".format(curr.strftime("%Y%m%d"),randomNumb_surFix),"templateDB.db.optimied")):
