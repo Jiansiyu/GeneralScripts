@@ -1,5 +1,5 @@
 #! /bin/csh
-source /u/home/siyuj/env_set/setPRex.csh
+source /u/home/siyuj/env_set/setPRex.csh > /dev/null
 # template bash script used for scan single folder
 # input: $2 target folder than contains the databse template subfolder
 # input: $1 the source folder of the opt code, the code will go into the code, and start the scripts
@@ -28,6 +28,8 @@ set OptimizedDpDBFname=${TargetFolder}/templateDB.db.Theta.Phi.Y.Dp.optimied
 set OptimizedDBFname=${TargetFolder}/templateDB.db.optimied
 set OptimizedDBFname_postrun=${TargetFolder}/templateDB.db.optimied_junk
 
+set OptSucessCheckFile=${TargetFolder}/Sieve._2322_p4.f51_reform/CheckSieve_Report.root
+
 if (! -d ${TargetFolder} ) then
   echo "${RED}[ERROR] ${NC} Path NOT Found ${TargetFolder}"
     exit
@@ -43,20 +45,16 @@ if ( ! -f "${TemplateFname}" ) then
     exit
 endif
 
-if ( ! -f "${OptimizedDBFname}" ) then
+if ( -f "${OptSucessCheckFile}" ) then
     echo "${GREEN}[WARNING] ${NC} Optimized skip this folder"
-    exit
+    exit 
 endif
 
 
-echo "go into folder ${RunOptFolder}"
+echo "${GREEN}[INFOR] ${NC} go into folder ${RunOptFolder}"
 cd ${RunOptFolder}
+echo "${GREEN}[INFOR] ${NC} starting starting wow wow wow so cool"
 
-#set optScriptBranch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-
-#echo "Opt script branch name: ${optScriptBranch}"
-
-echo "Start the Theta and Phi Optimization!!"
 analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('true',"theta","'${TemplateFname}'","'${OptimizedThetaDBFname}'")'
 analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('true',"phi","'${OptimizedThetaDBFname}'","'${OptimizedPhiDBFname}'")'
 analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('false',"phi","'${OptimizedPhiDBFname}'","'${OptimizedDBFname}'")'
