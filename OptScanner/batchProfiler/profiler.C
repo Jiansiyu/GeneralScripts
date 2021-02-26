@@ -12,6 +12,9 @@
 #include "TChain.h"
 #include "TPaveText.h"
 #include "TROOT.h"
+#include <iostream>
+#include <fstream>
+
 bool getsieveResidualCut(std::map<Int_t,TH2F *>sieveThResidualhh,double residualThres = 0.001,Int_t countCut = 5){
     /// apply cut the on the residual
     for(auto indexer = sieveThResidualhh.begin(); indexer != sieveThResidualhh.end(); indexer++){
@@ -30,7 +33,6 @@ bool getsieveResidualCut(std::map<Int_t,TH2F *>sieveThResidualhh,double residual
     }
     return true;
 }
-
 
 bool getScanResult(TCanvas *canv=new TCanvas("DefaultCanv","DefaultCanv",1960,1080),TString fnameTemplate="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_PRex_2021/result/LHRS/20210201_scan_Phi_test6/DBScan_20210221_00000"){
     // load the root file
@@ -157,17 +159,23 @@ Int_t main(int argc, char *argv[]){
         std::cout<<"./runVirifer startRunID endRunID"<<std::endl;
         exit(-1);
     }
+    std::ofstream log;
+    log.open("runlog.txt",std::ios::in);
     std::cout<<"Start Index:"<<startScanIndex<<"  -> "<<endScanIndex<<"/("<<endScanIndex-startScanIndex<<")"<<std::endl;
-
     for (Int_t folderIndex = startScanIndex; folderIndex <= endScanIndex; folderIndex++){
         TString foldername = Form("/lustre19/expphy/volatile/halla/parity/siyu/PRexOptScan/Run4/DBScan_20210218_%06d",folderIndex);
-
-        TCanvas *canv = new TCanvas(Form("Canv%d",folderIndex),Form("Canv%d",folderIndex),4000,1960);
-        auto resFlag = getScanResult(canv,foldername.Data());
-        std::cout<<"Working on "<< folderIndex<<std::endl;
-        if (resFlag)
-        {
-            canv->SaveAs(Form("/w/halla-scifs17exp/parity/disk1/siyu/OptScan/OptScanner/batchProfiler/Result/test_%06d.jpg",folderIndex));
+        //check the existance
+        if (!gSystem->AccessPathName(Form("/lustre19/expphy/volatile/halla/parity/siyu/PRexOptScan/Run4/DBScan_20210218_%06d/Sieve._2322_p4.f51_reform/CheckSieve_Report.root",folderIndex))) {
+            TCanvas *canv = new TCanvas(Form("Canv%d", folderIndex), Form("Canv%d", folderIndex), 4000, 1960);
+            auto resFlag = getScanResult(canv, foldername.Data());
+            std::cout << "Working on " << folderIndex << std::endl;
+            if (resFlag) {
+                canv->SaveAs(
+                        Form("/w/halla-scifs17exp/parity/disk1/siyu/OptScan/OptScanner/batchProfiler/Result/test_%06d.jpg",
+                             folderIndex));
+            }
+        } else{
+            log << foldername.Data()<<std::endl;
         }
     }
 }

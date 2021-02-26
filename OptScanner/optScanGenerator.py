@@ -155,7 +155,7 @@ class optDatabaseTemplateGenerator():
         '''
         today=date.today()
         datePreFix=today.strftime("%Y%m%d")
-        datePreFix = '20210218'
+        datePreFix = '20210218'            #TODO temperary usage
         # randomNumb_surFix=randint(11111111,99999999)
         randomNumb_surFix="{:06}".format(self.OptDBFileCount)
         self.OptDBFileCount=self.OptDBFileCount+1
@@ -310,6 +310,10 @@ class optDatabaseTemplateGenerator():
                                                           fileCounter // self.jobsPerNode * self.jobsPerNode + self.jobsPerNode)
             jobScriptsfname = os.path.join(self.jobsfolder, jobScriptsfname)
             endRunID = fileCounter // self.jobsPerNode * self.jobsPerNode + self.jobsPerNode
+            if fileCounter < 999999:
+                fileCounter = endRunID
+                continue
+
             with open(jobScriptsfname, "w") as runCMDio:
                 self.runCMDList.add(jobScriptsfname)
                 if not os.access(jobScriptsfname, os.X_OK):
@@ -320,7 +324,16 @@ class optDatabaseTemplateGenerator():
                 runCMDio.write("set startRunID = {}\n".format(fileCounter))
                 runCMDio.write("set endRunID = {}\n".format(endRunID))
                 runCMDio.write("set ncores = {}\n".format(self.coresPerNode))
-                runCMDio.write("seq -f %06g $startRunID $endRunID | xargs -i --max-procs=$ncores bash -c \"{} {} {}_{{}} > /dev/null\"\n".format(self.optScannerBashScript,self.OptSourceFolder,self.templateFolderList[fileCounter][:-7]))
+
+                folderNameTemplateHeader = self.templateFolderList[fileCounter]
+                indexer = -1
+                while folderNameTemplateHeader[indexer] !="_":
+                    indexer -= 1
+                folderNameTemplateHeader = folderNameTemplateHeader[:indexer]
+                runCMDio.write(
+                    "seq -f %06g $startRunID $endRunID | xargs -i --max-procs=$ncores bash -c \"echo {{}};{} {} {}_{{}} > /dev/null\"\n".format(
+                        self.optScannerBashScript, self.OptSourceFolder, folderNameTemplateHeader))
+                # runCMDio.write("seq -f %06g $startRunID $endRunID | xargs -i --max-procs=$ncores bash -c \"echo {{}};{} {} {}_{{}} > /dev/null\"\n".format(self.optScannerBashScript,self.OptSourceFolder,self.templateFolderList[fileCounter][:-7]))
                 runCMDio.close()
             fileCounter= endRunID
         # finish creating bundle command that ready to send to ifarm
