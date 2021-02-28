@@ -1,2 +1,7 @@
 job/*
 result/*
+*.exe
+*.so
+*.o
+*.d
+.*

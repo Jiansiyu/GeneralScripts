@@ -3,3 +3,7 @@ CMakeLists.txt
 *.so
 *.d
 *.pcm
+.*
+CMake*
+CMAKE*
+*.root

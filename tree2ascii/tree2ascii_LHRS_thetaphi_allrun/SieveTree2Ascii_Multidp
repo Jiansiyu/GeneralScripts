@@ -1,0 +1,158 @@
+#!/bin/bash
+
+## changed for PRex Optimization
+if [ "$#" -ne 1 ]; then
+    echo "Illegal number of parameters"
+    echo "./myTree2AscII [path contains the cut files]  "
+    echo "example: ./myTree2AscII ../Result "
+    exit
+fi
+
+ARCH=$(arch)
+PROG=./tree2ascii
+            
+ROOTFILEDIR="/home/newdriver/pyQuant/PRex_Backups/PRex_CutBackup/Cut20210111_PRex/rootfile"
+
+prefix="prexLHRS"
+# Path that contains the cut 
+
+DIR=$1
+nfoil=1
+
+des="Sieve.Full.test"
+
+#IdOffSet=49
+if [ -f $DIR/${des} ]
+then
+  mv -f $DIR/${des}  $DIR/${des}.old
+fi
+
+
+Id=0
+#run  run 1695, -1% dp scan
+keyrun=1695
+$PROG -pv -d SieveVars.def -O $Id\
+        -s $DIR/${prefix}_${keyrun}.SieveCut.ncut \
+        -c $DIR/${prefix}_${keyrun}.SieveCut.cut \
+        -g $DIR/${prefix}_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1.root \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1_1.root 
+        
+Id=98
+#1696 0% dp scan
+keyrun=1696    
+$PROG -pv -d SieveVars.def -O $Id\
+        -s $DIR/${prefix}_${keyrun}.SieveCut.ncut \
+        -c $DIR/${prefix}_${keyrun}.SieveCut.cut \
+        -g $DIR/${prefix}_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1.root \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1_1.root 
+        #\
+        #$ROOTFILEDIR/${prefix}_20827_-1_2.root \
+        #$ROOTFILEDIR/${prefix}_20827_-1_3.root 
+
+Id=196
+#1694 1% dp scan
+keyrun=1694    
+$PROG -pv -d SieveVars.def -O $Id\
+        -s $DIR/${prefix}_${keyrun}.SieveCut.ncut \
+        -c $DIR/${prefix}_${keyrun}.SieveCut.cut \
+        -g $DIR/${prefix}_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1.root  \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1_1.root  
+
+Id=98
+#1696 0% dp scan
+keyrun=2239    
+$PROG -pv -d SieveVars.def -O $Id\
+        -s $DIR/${prefix}_${keyrun}.SieveCut.ncut \
+        -c $DIR/${prefix}_${keyrun}.SieveCut.cut \
+        -g $DIR/${prefix}_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1.root \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1_1.root 
+
+Id=98
+#1696 0% dp scan
+keyrun=2240    
+$PROG -pv -d SieveVars.def -O $Id\
+        -s $DIR/${prefix}_${keyrun}.SieveCut.ncut \
+        -c $DIR/${prefix}_${keyrun}.SieveCut.cut \
+        -g $DIR/${prefix}_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1.root \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1_1.root 
+
+Id=98
+#1696 0% dp scan
+keyrun=2241    
+$PROG -pv -d SieveVars.def -O $Id\
+        -s $DIR/${prefix}_${keyrun}.SieveCut.ncut \
+        -c $DIR/${prefix}_${keyrun}.SieveCut.cut \
+        -g $DIR/${prefix}_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1.root \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1_1.root 
+
+Id=98
+#1696 0% dp scan
+keyrun=2244    
+$PROG -pv -d SieveVars.def -O $Id\
+        -s $DIR/${prefix}_${keyrun}.SieveCut.ncut \
+        -c $DIR/${prefix}_${keyrun}.SieveCut.cut \
+        -g $DIR/${prefix}_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1.root \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1_1.root 
+
+Id=98
+#1696 0% dp scan
+keyrun=2245
+$PROG -pv -d SieveVars.def -O $Id\
+        -s $DIR/${prefix}_${keyrun}.SieveCut.ncut \
+        -c $DIR/${prefix}_${keyrun}.SieveCut.cut \
+        -g $DIR/${prefix}_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1.root \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1_1.root 
+
+Id=196
+#1696 0% dp scan
+keyrun=2256
+$PROG -pv -d SieveVars.def -O $Id\
+        -s $DIR/${prefix}_${keyrun}.SieveCut.ncut \
+        -c $DIR/${prefix}_${keyrun}.SieveCut.cut \
+        -g $DIR/${prefix}_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1.root \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1_1.root 
+
+Id=0
+#1696 0% dp scan
+keyrun=2257
+$PROG -pv -d SieveVars.def -O $Id\
+        -s $DIR/${prefix}_${keyrun}.SieveCut.ncut \
+        -c $DIR/${prefix}_${keyrun}.SieveCut.cut \
+        -g $DIR/${prefix}_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1.root \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1_1.root 
+
+
+Id=98
+#1696 0% dp scan
+keyrun=2322
+$PROG -pv -d SieveVars.def -O $Id\
+        -s $DIR/${prefix}_${keyrun}.SieveCut.ncut \
+        -c $DIR/${prefix}_${keyrun}.SieveCut.cut \
+        -g $DIR/${prefix}_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1.root \
+        $ROOTFILEDIR/${prefix}_${keyrun}_-1_1.root
+
+#cat $DIR/Sieve._1695_p4.f51  $DIR/Sieve._1696_p4.f51 $DIR/Sieve._1694_p4.f51 $DIR/Sieve._2239_p4.f51 $DIR/Sieve._2240_p4.f51 $DIR/Sieve._2241_p4.f51 $DIR/Sieve._2244_p4.f51 $DIR/Sieve._2245_p4.f51 $DIR/Sieve._2256_p4.f51 $DIR/Sieve._2257_p4.f51> $DIR/${des}
+
+echo "Done!"
