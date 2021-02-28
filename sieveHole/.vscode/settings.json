@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.php": "php",
+        "showFocalRight.C": "cpp",
+        "sieve_holes.C": "cpp"
+    }
+}

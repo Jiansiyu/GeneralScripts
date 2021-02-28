@@ -1,0 +1,36 @@
+This file: 
+   /adaqfs/home/a-onl/happexsp/altprex/bobMacro/README
+
+Bob Michaels, July 6, 2019
+
+You need a root file AfileR.root in this directory, then execute 
+
+root .x showFocalRight.C
+
+etc, which each look for that root file.
+
+Similar macros will be provided for L-HRS when that
+database is done.
+
+--------- Appendix, with an example ------------
+
+[a-onl@aonl3 altprex]$ goaltprex
+[a-onl@aonl3 altprex]$ analyzer
+  ************************************************
+  *                                              *
+  *            W E L C O M E  to  the            *
+  *       H A L L A   C++  A N A L Y Z E R       *
+  *                                              *
+  *  Release            1.6.6        May 06 2019 *
+  *  Based on ROOT  6.16/00          Jan 23 2019 *
+  *                                              *
+  *            For information visit             *
+  *        http://hallaweb.jlab.org/podd/        *
+  *                                              *
+  ************************************************
+analyzer [0] .x setupR.C(20856)
+The root file ends up in /chafs1/work1, so ...
+[a-onl@aonl3 altprex]$ cd bobMacro/
+[a-onl@aonl3 bobMacro]$ ln -s /chafs1/work1/prex_counting/prexRHRS_20856.root AfileR.root
+[a-onl@aonl3 bobMacro]$ root .x showQsqRight.C 
+

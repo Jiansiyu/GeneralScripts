@@ -1,0 +1,87 @@
+.x showFocalRight.C
+.q
+.x showRightAngles.C
+.q
+.x showSieveRight.C
+.q
+.x showQsqRight.C
+.q
+TFile *_file0 = TFile::Open("/chafs1/work1/prex_counting/prexLHRS_1788_-1.root")
+T->Draw("P.S0AadcL")
+T->Draw("P.S0BadcL")
+T->Draw("P.S0AadcL")
+TH1F *h1_Aon = new TH1F("h1_Aon","S0 A, both HV on ",100,400,600)
+T->Draw("P.S0AadcL>>h1_Aon")
+TFile *_file0 = TFile::Open("/chafs1/work1/prex_counting/prexLHRS_1789_-1.root")
+TFile *_file1 = TFile::Open("/chafs1/work1/prex_counting/prexLHRS_1789_-1.root")
+TH1F *h1_Aoff = new TH1F("h1_Aoff","S0 A, HV A off ",100,400,600)
+T->Draw("P.S0AadcL>>h1_Aoff")
+h1_Aon->Draw()
+h1_Aoff->Draw()
+h1_Aon->Draw()
+h1_Aoff->Draw()
+h1_Aon->Draw()
+h1_Aoff->Draw()
+h1_Aon->Draw()
+h1_Aoff->Draw()
+.q
+TFile *_file0 = TFile::Open("/chafs1/work1/prex_counting/prexLHRS_1788_-1.root")
+TH1F *h1_Aon = new TH1F("h1_Aon","S0 A, both HV on ",200,400,900)
+T->Draw("P.S0AadcL>>h1_Aon")
+TFile *_file1 = TFile::Open("/chafs1/work1/prex_counting/prexLHRS_1789_-1.root")
+TH1F *h1_Aoff = new TH1F("h1_Aoff","S0 A, S0A HV off ",200,400,900)
+T->Draw("P.S0AadcL>>h1_Aoff")
+h1_Aoff->SetLineColor(4)
+h1_Aon->SetLineColor(2)
+h1_Aoff->Draw()
+h1_Aon->Draw("same")
+.q
+.x showSieveRight.C
+.q
+.x showSieveRight.C
+.q
+.x showRightAngles.C
+.q
+.x showSieveRight.C
+.q
+.x showQsqRight.C
+.q
+.x showFocalRight.C
+.q
+.x showSieveRight.C
+.q
+.x showSieveRight.C
+.x showSieveRight.C
+.q
+.x showQsqRight.C
+.q
+.x showQsqRight.C
+.q
+.x showQsqRight.C
+.q
+.x showSieveRight.C 
+.x showQsqRight.C 
+.q
+.x showQsqRight.C
+.q
+.x showRightAngles.C 
+.q
+.x showRightAngles.C
+..q
+.q
+.x showRightAngles.C
+.q
+.x showQsqRight.C
+.q
+.x showQsqRight.C 
+.q
+.x showSieveRight.C
+.q
+.x showSieveRight.C 
+.q
+.x showSieveRight.C
+.x showSieveRight.C
+.x sieve_holes.C 
+.q
+.x sieve_holes.C 
+.q
