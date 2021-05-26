@@ -56,7 +56,7 @@ SLOT_OBJS   += ${patsubst ./%, ./bin/%, ${patsubst %.cpp, %Dic.o, ${SLOT_SOURCE}
 SOURCE_OBJS += ${patsubst ./%, ./bin/%, ${addsuffix .o, ${basename ${SOURCE}}}}
 OBJS    +=  ${SOURCE_OBJS} ${SLOT_OBJS}
 
-TARGET = getData
+TARGET = sieveDistance
 all: ${TARGET}  
 
 ${TARGET}: ${OBJS} 
