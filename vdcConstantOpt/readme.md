@@ -29,6 +29,10 @@ sieve whole again after change the t000 y000, p000 term
 
 ```
 
+- check the focal plane variables 
+```c++
+OpticsFocalVarCheck()
+```
 
 # @ me
 - [Siyu Jian @ uva](mailto:sj9va@virginia.edu)

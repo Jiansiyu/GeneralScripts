@@ -252,7 +252,6 @@ T1->SetBranchAddress("rate",&thisRate); T1->SetBranchAddress("x_vdc_tr",&thisXvd
  as2->SetTextColor(2);
 // gPad->Modified();
 // c3->SaveAs(Form("%s_Asym1_%.1fper.png",TargPos[1],sept));
- 
 
  
  //You can look at this for different target positions

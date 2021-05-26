@@ -158,8 +158,45 @@ int main(int argc, char* argv[])
                     d[6]=-0.4994;
                 }
 
+                if(inputFilename.find("21363")!=std::string::npos){
+                    d[5]= 3.7988;
+                    d[6]=-0.4995;
+                }
 
-			}
+                if(inputFilename.find("21364")!=std::string::npos){
+                    d[5]=-0.2005;
+                    d[6]=-0.4994;
+                }
+
+                if(inputFilename.find("21365")!=std::string::npos){
+                    d[5]=-3.2000;
+                    d[6]=-0.4985;
+                }
+
+                if(inputFilename.find("21366")!=std::string::npos){
+                    d[5]= 2.7970;
+                    d[6]=-0.4979;
+                }
+
+                if(inputFilename.find("21367")!=std::string::npos){
+                    d[5]= 1.7864;
+                    d[6]=-3.5015;
+                }
+
+                if(inputFilename.find("21368")!=std::string::npos){
+                    d[5]= 1.7921;
+                    d[6]=-3.4975;
+                }
+                if(inputFilename.find("21370")!=std::string::npos){
+                    d[5]=-0.1967;
+                    d[6]=-3.5015;
+                }
+                // add from the the sister run 2241
+                if(inputFilename.find("21369")!=std::string::npos){
+                    d[5]=-2.2083;
+                    d[6]=-3.4970;
+                }
+            }
 
         	fprintf(fp2,"%d\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\n",index,d[0],d[1],d[2],d[3],d[4],d[5]/1000.0,d[6]/1000.0,0.0);
     	}

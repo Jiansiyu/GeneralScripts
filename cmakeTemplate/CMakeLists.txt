@@ -19,9 +19,9 @@ endif()
 
 #8#----------------------------------------------------------------------------
 ## Set the sources which have a corresponding .h file here
-set(sources PRex_pedestal_generator/src/BenchMark.cxx PRex_pedestal_generator/src/input_handler.cxx PRex_pedestal_generator/src/prex_online_display.cxx  PRex_pedestal_generator/src/raw_decoder.cxx  ) 
+set(sources focalDistance.C)
 ## Make corresponding header files
-string(REGEX REPLACE .cxx .h headers "${sources}")
+#string(REGEX REPLACE .cxx .h headers "${sources}")
 ## Append a few extra header files in the repository.  (But do not append the
 ## sbs_LinkDef.h header here, that is further down this cmake config.
 #list(APPEND headers "DebugDef.h")

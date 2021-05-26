@@ -215,7 +215,7 @@ std::map<Int_t,TH1F *>getRunAsym(TString fname){
 void getCompare(){
     Int_t runID = 2052;
     TH1F *asyComph=new TH1F(Form("Asym_run%d",runID),Form("Asym_run%d",runID),11,-1,10);
-    asyComph->GetYaxis()->SetRangeUser(0.5,0.65);
+    asyComph->GetYaxis()->SetRangeUser(0.57,0.59);
     asyComph->SetMarkerStyle(8);
     asyComph->SetMarkerSize(2);
     asyComph->SetLineWidth(1);
@@ -223,14 +223,14 @@ void getCompare(){
 
 
     TH1F *qsqComph = new TH1F(Form("qsq_run%d",runID),"LHRS Apparent Q^{2} Data",11,-1,10);
-    qsqComph->GetYaxis()->SetRangeUser(0.0058,0.007);
+    qsqComph->GetYaxis()->SetRangeUser(0.00625,0.0066);
     qsqComph->SetMarkerStyle(8);
     qsqComph->SetMarkerSize(2);
     qsqComph->SetLineWidth(1);
     qsqComph->SetLineColor(20);
 
     TH1F *labComph = new TH1F(Form("lab_run%d",runID),"LHRS Apparent #theta_{lab} Data",11,-1,10);
-    labComph->GetYaxis()->SetRangeUser(4.5,5.1);
+    labComph->GetYaxis()->SetRangeUser(4.7,4.9);
     labComph->SetMarkerStyle(8);
     labComph->SetMarkerSize(2);
     labComph->SetLineWidth(1);
@@ -242,7 +242,7 @@ void getCompare(){
     double qsq_dnp = 0;
     TFile *fileio = new TFile("report.root","recreate");
 
-    for (int scanIndex = 0; scanIndex <7; scanIndex ++){
+    for (int scanIndex = 0; scanIndex <8; scanIndex ++){
         TString fname = Form("/home/newdriver/Storage/Research/PRex_Experiment/PRex_Replay/replay/Result/prexLHRS_UID%d_2052_-1*",scanIndex);
 
         auto res = getRunAsym(fname.Data());
@@ -281,24 +281,28 @@ void getCompare(){
     TLine *line = new TLine(-1,asym_dnp,10,asym_dnp);
     line->SetLineColor(3);
     line->Draw("same");
-    TLine *lineUpper = new TLine(-1,asym_dnp*0.95,10,asym_dnp*0.95);
-    lineUpper->SetLineColor(6);
-    lineUpper->Draw("same");
-    TLine *lineLower = new TLine(-1,asym_dnp*1.05,10,asym_dnp*1.05);
-    lineLower->SetLineColor(6);
-    lineLower->Draw("same");
+//    TLine *lineUpper = new TLine(-1,asym_dnp*0.98,10,asym_dnp*0.98);
+//    lineUpper->SetLineColor(6);
+//    lineUpper->Draw("same");
+//    TLine *lineLower = new TLine(-1,asym_dnp*1.02,10,asym_dnp*1.02);
+//    lineLower->SetLineColor(6);
+//    lineLower->Draw("same");
+
+
+
+
     canv->cd(2);
     qsqComph->Draw("E1");
 
     TLine *lineq = new TLine(-1,qsq_dnp,10,qsq_dnp);
     lineq->SetLineColor(3);
     lineq->Draw("same");
-    TLine *lineqUpper = new TLine(-1,qsq_dnp*0.95,10,qsq_dnp*0.95);
-    lineqUpper->SetLineColor(6);
-    lineqUpper->Draw("same");
-    TLine *lineqLower = new TLine(-1,qsq_dnp*1.05,10,qsq_dnp*1.05);
-    lineqLower->SetLineColor(6);
-    lineqLower->Draw("same");
+//    TLine *lineqUpper = new TLine(-1,qsq_dnp*0.98,10,qsq_dnp*0.98);
+//    lineqUpper->SetLineColor(6);
+//    lineqUpper->Draw("same");
+//    TLine *lineqLower = new TLine(-1,qsq_dnp*1.02,10,qsq_dnp*1.02);
+//    lineqLower->SetLineColor(6);
+//    lineqLower->Draw("same");
 
 
     canv->cd(3);
@@ -307,12 +311,12 @@ void getCompare(){
     TLine *linet = new TLine(-1,theta_dnp,10,theta_dnp);
     linet->SetLineColor(3);
     linet->Draw("same");
-    TLine *lineUppert= new TLine(-1,theta_dnp*0.95,10,theta_dnp*0.95);
-    lineUppert->SetLineColor(6);
-    lineUppert->Draw("same");
-    TLine *lineLowert = new TLine(-1,theta_dnp*1.05,10,theta_dnp*1.05);
-    lineLowert->SetLineColor(6);
-    lineLowert->Draw("same");
+//    TLine *lineUppert= new TLine(-1,theta_dnp*0.98,10,theta_dnp*0.98);
+//    lineUppert->SetLineColor(6);
+//    lineUppert->Draw("same");
+//    TLine *lineLowert = new TLine(-1,theta_dnp*1.02,10,theta_dnp*1.02);
+//    lineLowert->SetLineColor(6);
+//    lineLowert->Draw("same");
 
 
     canv->Update();

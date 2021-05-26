@@ -11,8 +11,8 @@
  gSystem->AddIncludePath("-I$ANALYZER/src/hana_decode");
  gInterpreter->AddIncludePath("$ANALYZER/src/hana_decode");
 
- gROOT->LoadMacro("vdcConstOpt.C");
-// gROOT->LoadMacro("ROpticsOptScript.C");
+// gROOT->LoadMacro("vdcConstOpt.C");
+ gROOT->LoadMacro("OpticsFocalVarCheck.C");
 //gErrorIgnoreLevel = kFatal;
 }
 
