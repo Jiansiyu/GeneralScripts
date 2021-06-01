@@ -64,10 +64,10 @@ public:
 
     float distance(sieveInfor *infor){
 
-        float d_sqX  = (this->focal_X - infor->focal_X)*(this->focal_X - infor->focal_X)/std::sqrt(this->focal_sigma_X*this->focal_sigma_X + infor->focal_sigma_X*infor->focal_sigma_X);
-        float d_sqY  = (this->focal_Y - infor->focal_Y)*(this->focal_Y - infor->focal_Y)/std::sqrt(this->focal_sigma_Y*this->focal_sigma_Y + infor->focal_sigma_Y*infor->focal_sigma_Y);
-        float d_sqTh = (this->focal_theta - infor->focal_theta) * (this->focal_theta - infor->focal_theta)/std::sqrt(this->focal_sigma_theta*this->focal_sigma_theta + infor->focal_sigma_theta * infor->focal_sigma_theta);
-        float d_sqPh = (this->focal_phi   - infor->focal_phi) *(this->focal_phi - infor->focal_phi)/std::sqrt(this->focal_sigma_phi*this->focal_sigma_phi + infor->focal_sigma_phi*infor->focal_sigma_phi);
+        float d_sqX  = (this->focal_X - infor->focal_X)*(this->focal_X - infor->focal_X)/(this->focal_sigma_X*this->focal_sigma_X + infor->focal_sigma_X*infor->focal_sigma_X);
+        float d_sqY  = (this->focal_Y - infor->focal_Y)*(this->focal_Y - infor->focal_Y)/(this->focal_sigma_Y*this->focal_sigma_Y + infor->focal_sigma_Y*infor->focal_sigma_Y);
+        float d_sqTh = (this->focal_theta - infor->focal_theta) * (this->focal_theta - infor->focal_theta)/(this->focal_sigma_theta*this->focal_sigma_theta + infor->focal_sigma_theta * infor->focal_sigma_theta);
+        float d_sqPh = (this->focal_phi   - infor->focal_phi) *(this->focal_phi - infor->focal_phi)/(this->focal_sigma_phi*this->focal_sigma_phi + infor->focal_sigma_phi*infor->focal_sigma_phi);
 
         float distance= std::sqrt(d_sqX + d_sqY + d_sqTh + d_sqPh);
         return  distance;
@@ -79,7 +79,6 @@ public:
         float d_sqY  = (this->focal_Y - infor->focal_Y)*(this->focal_Y - infor->focal_Y);
         float d_sqTh = (this->focal_theta - infor->focal_theta) * (this->focal_theta - infor->focal_theta);
         float d_sqPh = (this->focal_phi   - infor->focal_phi) *(this->focal_phi - infor->focal_phi);
-
 
         return  distance;
     }
@@ -113,11 +112,6 @@ void getDistance(TString rootfilePath = "./data/LHRS/checkSieve_%d.root"){
 
         for(Int_t cutID = min_cutID; cutID <= max_cutID; cutID++){
             // get the information and project the datas
-            //TH1F *focal_theta_temp = new TH1F(Form("focal_theta_temp"),Form("focal_theta_temp"),10000,-1,1);
-            //TH1F *focal_phi_temp = new TH1F(Form("focal_phi_temp"),Form("focal_phi_temp"),10000,-1,1);
-            //TH1F *focal_x_temp = new TH1F(Form("focal_x_temp"),Form("focal_x_temp"),10000,-1,1);
-            //TH1F *focal_y_temp = new TH1F(Form("focal_y_temp"),Form("focal_y_temp"),10000,-1,1);
-
             std::unique_ptr<TH1F> focal_theta_temp( new TH1F(Form("focal_theta_temp"),Form("focal_theta_temp"),10000,-1,1));
             std::unique_ptr<TH1F> focal_phi_temp(new TH1F(Form("focal_phi_temp"),Form("focal_phi_temp"),10000,-1,1));
             std::unique_ptr<TH1F> focal_x_temp(new TH1F(Form("focal_x_temp"),Form("focal_x_temp"),10000,-1,1));
@@ -163,6 +157,18 @@ void getDistance(TString rootfilePath = "./data/LHRS/checkSieve_%d.root"){
     }
     //get the central sieve and get the distance
     std::vector<float> distanceArray;
+
+//    {
+//        auto startinfor = sieveInforList[22400136];
+//        for(auto endIndex = sieveInforList.begin();endIndex!=sieveInforList.end();endIndex++){
+//            if (endIndex->first == 2240143) continue;
+//            auto value = startinfor.distance(& endIndex->second);
+//            distanceArray.push_back(value);
+//
+//        }
+//    }
+
+    // get the distance between all the sieve holes
     for (auto startIndex = sieveInforList.begin(); startIndex != sieveInforList.end(); startIndex++){
         for(auto endIndex = sieveInforList.begin();endIndex!=sieveInforList.end();endIndex++){
              auto value = startIndex->second.distance(& endIndex->second);
