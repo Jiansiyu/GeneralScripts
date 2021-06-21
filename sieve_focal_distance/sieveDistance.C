@@ -6,6 +6,27 @@
 #include "iostream"
 #include "TSystem.h"
 #include "TCanvas.h"
+#include "fstream"
+
+const UInt_t NSieveCol = 13;
+const UInt_t NSieveRow = 7;
+
+inline const UInt_t GetMomID(const UInt_t uid)  {
+    return uid/(NSieveRow *(NSieveCol+1));
+}
+
+inline const UInt_t GetRowID(const UInt_t uid){
+    auto res=uid %(NSieveRow *(NSieveCol+1));
+    const auto Row= res%NSieveRow;
+    return Row;
+}
+
+inline const UInt_t GetColID(const UInt_t uid){
+    auto res=uid %(NSieveRow *(NSieveCol+1));
+    const auto Col= res / NSieveRow;
+    return Col;
+}
+
 
 class sieveInfor{
 public:
@@ -73,15 +94,15 @@ public:
         return  distance;
     }
 
-    float* distance2(sieveInfor *infor){
-        float distance[2];
-        float d_sqX  = (this->focal_X - infor->focal_X)*(this->focal_X - infor->focal_X);
-        float d_sqY  = (this->focal_Y - infor->focal_Y)*(this->focal_Y - infor->focal_Y);
-        float d_sqTh = (this->focal_theta - infor->focal_theta) * (this->focal_theta - infor->focal_theta);
-        float d_sqPh = (this->focal_phi   - infor->focal_phi) *(this->focal_phi - infor->focal_phi);
-
-        return  distance;
-    }
+//    float* distance2(sieveInfor *infor){
+//        float distance[2];
+//        float d_sqX  = (this->focal_X - infor->focal_X)*(this->focal_X - infor->focal_X);
+//        float d_sqY  = (this->focal_Y - infor->focal_Y)*(this->focal_Y - infor->focal_Y);
+//        float d_sqTh = (this->focal_theta - infor->focal_theta) * (this->focal_theta - infor->focal_theta);
+//        float d_sqPh = (this->focal_phi   - infor->focal_phi) *(this->focal_phi - infor->focal_phi);
+//
+//        return  distance;
+//    }
 
 
 
@@ -123,19 +144,6 @@ void getDistance(TString rootfilePath = "./data/LHRS/checkSieve_%d.root"){
             chain->Project(focal_theta_temp->GetName(),"focalTh",Form("CutID==%d",cutID));
             chain->Project(focal_phi_temp->GetName(),"focalPh",Form("CutID==%d",cutID));
 
-//            std::cout<<"CutID "<<cutID<<std::endl;
-//            std::cout<<"\t X " <<runID*10000 + cutID <<"  Entries :"<< focal_x_temp->GetEntries()<<"  Average :("<<
-//                focal_x_temp->GetMean()<<","<<focal_x_temp->GetRMS()<<")"<<std::endl;
-//
-//            std::cout<<"\t Y "<<runID*10000 + cutID<<"  Entries :"<< focal_y_temp->GetEntries()<<"  Average :("<<
-//                     focal_y_temp->GetMean()<<","<<focal_y_temp->GetRMS()<<")"<<std::endl;
-//
-//            std::cout<<"\t Th "<<runID*10000 + cutID<<"  Entries :"<< focal_theta_temp->GetEntries()<<"  Average :("<<
-//                     focal_theta_temp->GetMean()<<","<<focal_theta_temp->GetRMS()<<")"<<std::endl;
-//
-//            std::cout<<"\t Ph "<<runID*10000 + cutID<<"  Entries :"<< focal_phi_temp->GetEntries()<<"  Average :("<<
-//                     focal_phi_temp->GetMean()<<","<<focal_phi_temp->GetRMS()<<")"<<std::endl;
-
             if((focal_phi_temp->GetEntries() < 10) || (focal_x_temp->GetEntries()< 10) ||
                (focal_y_temp->GetEntries() < 10) || (focal_theta_temp->GetEntries() < 10)) continue;
             // buffer the data into the array
@@ -156,41 +164,95 @@ void getDistance(TString rootfilePath = "./data/LHRS/checkSieve_%d.root"){
         std::cout<<"Total Number  ::"<<sieveInforList.size()<<std::endl;
     }
     //get the central sieve and get the distance
-    std::vector<float> distanceArray;
 
-//    {
-//        auto startinfor = sieveInforList[22400136];
-//        for(auto endIndex = sieveInforList.begin();endIndex!=sieveInforList.end();endIndex++){
-//            if (endIndex->first == 2240143) continue;
-//            auto value = startinfor.distance(& endIndex->second);
-//            distanceArray.push_back(value);
-//
-//        }
-//    }
 
-    // get the distance between all the sieve holes
-    for (auto startIndex = sieveInforList.begin(); startIndex != sieveInforList.end(); startIndex++){
-        for(auto endIndex = sieveInforList.begin();endIndex!=sieveInforList.end();endIndex++){
-             auto value = startIndex->second.distance(& endIndex->second);
-             std::cout<<startIndex->first <<"-->"<<endIndex->first<<"  ::  "<<value<<std::endl;
-             if (startIndex->first == endIndex->first) continue;
-             distanceArray.push_back(value);
+    // save the data to the file
+    TString exportFname = "result.pdf";
+    {
+        std::vector<float> distanceArray;
+        for (auto startIndex = sieveInforList.begin(); startIndex != sieveInforList.end(); startIndex++){
+            for(auto endIndex = sieveInforList.begin();endIndex!=sieveInforList.end();endIndex++){
+                auto value = startIndex->second.distance(& endIndex->second);
+                std::cout<<startIndex->first <<"-->"<<endIndex->first<<"  ::  "<<value<<std::endl;
+                if (startIndex->first == endIndex->first) continue;
+                distanceArray.push_back(value);
+            }
         }
+
+        auto maxValue = std::max_element(distanceArray.begin(), distanceArray.end());
+        auto minValue = std::min_element(distanceArray.begin(),distanceArray.end());
+
+        std::unique_ptr<TCanvas> canv(new TCanvas("Canvas","Canvas",1960,1080));
+        canv->cd();
+        canv->Draw();
+
+        // draw all the histogram
+
+        std::unique_ptr<TH1F> disthist( new TH1F(Form("Distance_all_sieve"),Form("Distance_all_sieve"),100,(*minValue)*2-*maxValue, (*maxValue)*2 - *minValue));
+        for (auto value : distanceArray){
+            disthist->Fill(value);
+        }
+        disthist->Draw();
+        canv->Update();
+        canv->SaveAs(Form("%s.jpg",disthist->GetName()));
+        canv->Print(Form("%s[",exportFname.Data()),"pdf");
     }
 
-    auto maxValue = std::max_element(distanceArray.begin(), distanceArray.end());
-    auto minValue = std::max_element(distanceArray.begin(),distanceArray.end());
+    {
+        // get the min and the maxruns
+        int runListSize = sizeof(runList)/sizeof(Int_t);
+        Int_t  minRunID = *std::min_element(runList,runList+runListSize);
+        Int_t  maxRunID = *std::max_element(runList,runList+runListSize);
 
-    TCanvas *canv = new TCanvas("Canvas","Canvas",1960,1080);
-    canv->cd();
-    canv->Draw();
-    TH1F *disthist = new TH1F(Form("Distance_all_sieve"),Form("Distance_all_sieve"),100,(*minValue)*2-*maxValue, (*maxValue)*2 - *minValue);
-    for (auto value : distanceArray){
-        disthist->Fill(value);
+        std::ofstream txtfile("./result_infor.csv",std::ofstream::app);
+        auto titleStr = "startIndex,startCol,startRow,endIndex,endCol,endRow,distance";
+        txtfile<<titleStr<<std::endl;
+        for(auto startIndex = sieveInforList.begin(); startIndex !=sieveInforList.end(); startIndex++){
+            std::vector<float> distanceArray;
+            distanceArray.clear();
+            Int_t runID = startIndex->first/10000;
+            Int_t startCol = GetColID(startIndex->first%10000);
+            Int_t startRow = GetRowID(startIndex->first%10000);
+            Int_t startUID = runID*10000+ startCol*100 + startRow;
+
+            for(auto endIndex = sieveInforList.begin(); endIndex != sieveInforList.end();endIndex++){
+
+                Int_t endCol = GetColID(endIndex->first%10000);
+                Int_t endRow = GetRowID(endIndex->first%10000);
+
+                Int_t  endUID = int(endIndex->first/10000)*10000 + endCol*100 + endRow;
+
+                auto value = startIndex->second.distance(& endIndex->second);
+
+                if (startIndex->first == endIndex->first) continue;
+                distanceArray.push_back(value);
+
+                // save the data into the csv file
+                //auto writeStr = Form("%d,%d,%d,%d,%d,%d,%f",startIndex->first,startCol,startRow,endIndex->first,endCol,endRow,value);
+                auto writeStr = Form("%d,%d,%d,%d,%d,%d,%f",startUID,startCol,startRow,endUID,endCol,endRow,value);
+                txtfile << writeStr<<std::endl;
+            }
+
+            // save the data infor
+            auto maxValue = std::max_element(distanceArray.begin(), distanceArray.end());
+            auto minValue = std::min_element(distanceArray.begin(),distanceArray.end());
+
+            std::unique_ptr<TCanvas> canv(new TCanvas("Canvas","Canvas",1960,1080));
+            canv->cd();
+            canv->Draw();
+            // draw all the histogram
+            std::unique_ptr<TH1F> disthist( new TH1F(Form("Distance_run%d_col%d_row%d",runID,startCol,startRow),Form("Distance_run%d_col%d_row%d",runID,startCol,startRow),100,(*minValue)*2-*maxValue, (*maxValue)*2 - *minValue));
+            for (auto value : distanceArray){
+                disthist->Fill(value);
+            }
+            disthist->Draw();
+            canv->Update();
+            canv->Print(Form("%s",exportFname.Data()),"pdf");
+        }
+        txtfile.close();
+        std::unique_ptr<TCanvas> canv(new TCanvas("Canvas","Canvas",1960,1080));
+        canv->Print(Form("%s]",exportFname.Data()),"pdf");
     }
-    disthist->Draw();
-    canv->Update();
-    canv->SaveAs("test.jpg");
 
 }
 
