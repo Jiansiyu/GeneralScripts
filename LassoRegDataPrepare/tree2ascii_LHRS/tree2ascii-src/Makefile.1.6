@@ -115,6 +115,7 @@ all:		$(PROGRAM)
 $(PROGRAM):	$(OBJS)
 		$(LD) $(LDFLAGS) -o $@ $(OBJS) $(LIBS) $(HALLALIBS)
 		@echo "$@ done"
+		cp $(PROGRAM)  ../
 
 clean:
 		rm -f *.o *~ $(PROGRAM)
