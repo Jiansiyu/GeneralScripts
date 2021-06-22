@@ -1,0 +1,18 @@
+# For CREX data
+
+--------[ 2010-01-02 01:00:00 ]
+
+ebeam     = {ebeam}
+L.theta   = {ltheta}
+R.theta   = {rtheta}
+L.pcentral= {lpcentral}
+R.pcentral= {rpcentral}
+
+
+# for tune A
+# L.vdc.config = prex
+# R.vdc.config = prex
+
+# for tune B
+#L.vdc.config = prex-alt
+#R.vdc.config = prex-alt
