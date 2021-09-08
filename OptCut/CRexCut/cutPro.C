@@ -2,7 +2,7 @@
  * cutPro.C
  *
  *  Created on: Dec 12, 2019
- *      Author: newdriver
+ *      Author: Siyu Jian
  */
 
 #include <TROOT.h>
@@ -12,34 +12,22 @@
 #include <TChain.h>
 #include <TCut.h>
 #include <TCutG.h>
-#include <TPad.h>
-#include <TMath.h>
-#include <TH1F.h>
 #include <TH2F.h>
 #include <TH1.h>
 #include <TF1.h>
-#include <TMath.h>
-#include <TF1NormSum.h>
 #include <TPaveText.h>
 #include <map>
 #include <vector>
 #include <random>
 #include <iostream>
-#include <sys/stat.h>
-#include <sstream>
-#include <TComplex.h>
+
 #include <TVirtualPad.h>
 
-#include <TSpectrum2.h>
-#include <TF2.h>
 #include <TObject.h>
-#include "TMinuit.h"
 #include <TFile.h>
-#include <fstream>
 #include <TSystem.h>
 #include <TApplication.h>
 #include <TLatex.h>
-#include <TGApplication.h>
 
 // used for create the folder if does not exist in the destintion folder
 #include <boost/filesystem.hpp>
@@ -64,8 +52,8 @@ TString prepcut;
 TString generalcut;
 
 //CRex C-12
-TString generalcutR="R.tr.n==1 ";//&& R.vdc.u1.nclust==1&& R.vdc.v1.nclust==1 && R.vdc.u2.nclust==1 && R.vdc.v2.nclust==1 && R.gold.dp<1 && R.gold.dp > -0.1 && fEvtHdr.fEvtType==1";
-TString generalcutL="L.tr.n==1 && L.vdc.u1.nclust==1&& L.vdc.v1.nclust==1 && L.vdc.u2.nclust==1 && L.vdc.v2.nclust==1 && L.gold.dp<1 && L.gold.dp > -0.1 && fEvtHdr.fEvtType==1";
+TString generalcutR="R.tr.n==1 ";//&& R.vdc.u1.nclust==1&& R.vdc.v1.nclust==1 && R.vdc.u2.nclust==1 && R.vdc.v2.nclust==1";// && R.gold.dp<1 && R.gold.dp > -0.1 && fEvtHdr.fEvtType==1";
+TString generalcutL="L.tr.n==1 ";//&& L.vdc.u1.nclust==1&& L.vdc.v1.nclust==1 && L.vdc.u2.nclust==1 && L.vdc.v2.nclust==1 && L.gold.dp<1 && L.gold.dp > -0.1 && fEvtHdr.fEvtType==1";
 
 // CRex Water
 //TString generalcutR="R.tr.n==1 && R.vdc.u1.nclust==1&& R.vdc.v1.nclust==1 && R.vdc.u2.nclust==1 && R.vdc.v2.nclust==1 && fEvtHdr.fEvtType==1 && R.gold.p > 2.14 && R.gold.p < 2.2";
@@ -81,7 +69,10 @@ TString generalcutL="L.tr.n==1 && L.vdc.u1.nclust==1&& L.vdc.v1.nclust==1 && L.v
 //TString WorkDir = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200530/RHRS/";
 //TString WorkDir = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200701/";
 //TString WorkDir = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200701/water";
-TString WorkDir = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200915";
+//TString WorkDir = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200915";
+//TString WorkDir = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200921/RHRS";
+//TString WorkDir = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Water/cut_20201206";
+TString WorkDir = "/home/newdriver/Learning/GeneralScripts/OptCut/Result/CRex/20210907";
 
 TString CutSuf = ".FullCut.root";
 TString CutDescFileSufVertex = ".VertexCut.cut";
@@ -101,20 +92,13 @@ int minSieveHoles[13]=     {0,0,0,1,0,1,1,0,1,1,1,2,2};
 
 
 inline Bool_t IsFileExist (const std::string& name) {
-	  struct stat buffer;
-	  return (stat (name.c_str(), &buffer) == 0);
+//	  struct stat buffer;
+//	  return (stat (name.c_str(), &buffer) == 0);
+    return !gSystem->AccessPathName(name.c_str());
 }
 
 
-// check which experiment and which HRS and load its configure
-// experiment: PRex/CRex
-// HRS: L/R
-void ExperimentConfigure(TString experiment, TString HRS){
-
-
-}
-
-Int_t cutPro(UInt_t runID,UInt_t current_col=3,TString folder="/home/newdriver/Storage/Research/CRex_Experiment/RasterReplay/Replay/Result/") {
+Int_t cutPro(UInt_t runID,UInt_t current_col=3,TString folder="/home/newdriver/Storage/Research/CRex_Experiment/RasterReplay/Replay/Result/DNP_version/") {
 	// need to check the folder
 	std::string bufferedWorkFolder;
 	std::string bufferedSourceDir;
@@ -157,6 +141,7 @@ Int_t cutPro(UInt_t runID,UInt_t current_col=3,TString folder="/home/newdriver/S
 	TChain *chain=new TChain("T");
 	TString rootDir(folder.Data());
 	TString HRS="R";
+
 	if(runID>20000){ //RHRS
 		if(IsFileExist(Form("%s/prexRHRS_%d_-1.root",rootDir.Data(),runID))){
 			std::cout<<"Add File::"<<Form("%s/prexRHRS_%d_-1.root",rootDir.Data(),runID)<<std::endl;
@@ -338,12 +323,16 @@ void SavePatternHole(double momentumSigmaCut=3.0){
 			SaveCheckCanvas->cd(2)->cd(row_iter - row_min + 1);
 			chain->Project(sievehole[row_iter-row_min]->GetName(), Form("%s.gold.th:%s.gold.ph", HRS.Data(), HRS.Data()),Form("%s && %s",cutg->GetName(),generalcut.Data()));
 
-			sieveholemomentum[row_iter-row_min]=new TH1F(Form("hcut_R_%d_%d_%d_h_momentum", FoilID, col, row_iter),Form("hcut_R_%d_%d_%d_momentum", FoilID, col, row_iter),600,2.1,2.25);
+			sieveholemomentum[row_iter-row_min]=new TH1F(Form("hcut_R_%d_%d_%d_h_momentum", FoilID, col, row_iter),Form("hcut_R_%d_%d_%d_momentum", FoilID, col, row_iter),800,2.1,2.21);
 			chain->Project(sieveholemomentum[row_iter-row_min]->GetName(),Form("%s.gold.p",HRS.Data()),Form("%s && %s",cutg->GetName(),generalcut.Data()));
 			sieveholemomentumGausFit[row_iter-row_min]=new TF1(Form("1ststatesDpgaushcut_R_%d_%d_%d", FoilID, col, row_iter),"gaus",
-					sieveholemomentum[row_iter-row_min]->GetXaxis()->GetBinCenter(sieveholemomentum[row_iter-row_min]->GetMaximumBin())-0.002,
-					sieveholemomentum[row_iter-row_min]->GetXaxis()->GetBinCenter(sieveholemomentum[row_iter-row_min]->GetMaximumBin())+0.002);
+					sieveholemomentum[row_iter-row_min]->GetXaxis()->GetBinCenter(sieveholemomentum[row_iter-row_min]->GetMaximumBin())-0.0015,
+					sieveholemomentum[row_iter-row_min]->GetXaxis()->GetBinCenter(sieveholemomentum[row_iter-row_min]->GetMaximumBin())+0.0015);
+
+
+            sieveholemomentumGausFit[row_iter-row_min]->SetParameter(0,sieveholemomentum[row_iter-row_min]->GetMaximumBin());
 			sieveholemomentumGausFit[row_iter-row_min]->SetParameter(1,sieveholemomentum[row_iter-row_min]->GetXaxis()->GetBinCenter(sieveholemomentum[row_iter-row_min]->GetMaximumBin()));
+
 			sieveholemomentum[row_iter - row_min]->Fit(
 					Form("1ststatesDpgaushcut_R_%d_%d_%d", FoilID, col,
 							row_iter), "R", "ep",
@@ -1000,11 +989,11 @@ void SavePatternHole_P1(double momentumSigmaCut=3.0){
 //			SaveCheckCanvas->cd(2)->cd(row_iter - row_min + 1)->SetLogy();
 			chain->Project(sievehole[row_iter-row_min]->GetName(), Form("%s.gold.th:%s.gold.ph", HRS.Data(), HRS.Data()),Form("%s && %s",cutg->GetName(),generalcut.Data()));
 
-			sieveholemomentum[row_iter-row_min]=new TH1F(Form("hcut_R_%d_%d_%d_h_momentum", FoilID, col, row_iter),Form("hcut_R_%d_%d_%d_momentum", FoilID, col, row_iter),600,2.1,2.25);
+			sieveholemomentum[row_iter-row_min]=new TH1F(Form("hcut_R_%d_%d_%d_h_momentum", FoilID, col, row_iter),Form("hcut_R_%d_%d_%d_momentum", FoilID, col, row_iter),800,2.1,2.21);
 			chain->Project(sieveholemomentum[row_iter-row_min]->GetName(),Form("%s.gold.p",HRS.Data()),Form("%s && %s",cutg->GetName(),generalcut.Data()));
 			sieveholemomentumGausFit[row_iter-row_min]=new TF1(Form("1ststatesDpgaushcut_R_%d_%d_%d", FoilID, col, row_iter),"gaus",
-					sieveholemomentum[row_iter-row_min]->GetXaxis()->GetBinCenter(sieveholemomentum[row_iter-row_min]->GetMaximumBin())-0.002,
-					sieveholemomentum[row_iter-row_min]->GetXaxis()->GetBinCenter(sieveholemomentum[row_iter-row_min]->GetMaximumBin())+0.002);
+					sieveholemomentum[row_iter-row_min]->GetXaxis()->GetBinCenter(sieveholemomentum[row_iter-row_min]->GetMaximumBin())-0.0018,
+					sieveholemomentum[row_iter-row_min]->GetXaxis()->GetBinCenter(sieveholemomentum[row_iter-row_min]->GetMaximumBin())+0.0018);
 			sieveholemomentumGausFit[row_iter-row_min]->SetParameter(1,sieveholemomentum[row_iter-row_min]->GetXaxis()->GetBinCenter(sieveholemomentum[row_iter-row_min]->GetMaximumBin()));
 			sieveholemomentum[row_iter - row_min]->Fit(
 					Form("1ststatesDpgaushcut_R_%d_%d_%d", FoilID, col,
@@ -1053,8 +1042,8 @@ void SavePatternHole_P1(double momentumSigmaCut=3.0){
 //			hSieveP1h->GetXaxis()->SetRangeUser(sieveholemomentum[row_iter - row_min]->GetXaxis()->GetXmin()
 //							,groudpcenter-groudpsigma*4);
 
-			hSieveP1h->GetXaxis()->SetRangeUser(groudpcenter-0.006
-							,groudpcenter-0.004);
+			hSieveP1h->GetXaxis()->SetRangeUser(groudpcenter-0.0055
+							,groudpcenter-0.0035);
 
 
 			// get the bin center, and used this bin center as the fit center for the P1
@@ -1063,6 +1052,7 @@ void SavePatternHole_P1(double momentumSigmaCut=3.0){
 			hSieveP1h->Delete();
 			sieveholemomentumGausFit_p1[row_iter-row_min]=new TF1(Form("1ststatesDpgaushcut_R_p1_%d_%d_%d", FoilID, col, row_iter),"gaus",p1_mean-0.0009,
 					p1_mean+0.0009);
+            sieveholemomentumGausFit_p1[row_iter-row_min]->SetParameter(1,p1_mean);
 			sieveholemomentum[row_iter - row_min]->Fit(
 								Form("1ststatesDpgaushcut_R_p1_%d_%d_%d", FoilID, col,
 										row_iter), "R", "ep",
@@ -1072,8 +1062,7 @@ void SavePatternHole_P1(double momentumSigmaCut=3.0){
 			double_t p1guasMeam=sieveholemomentumGausFit_p1[row_iter-row_min]->GetParameter(1);
 			double_t p1guasSigma=sieveholemomentumGausFit_p1[row_iter-row_min]->GetParameter(2);
 
-
-			TLine *p1leftboundary=new TLine(p1guasMeam-(momentumSigmaCut-1)*p1guasSigma,0,p1guasMeam-(momentumSigmaCut-1)*p1guasSigma,(0.9*SaveCheckCanvas->cd(2)->cd(row_iter - row_min + 1)->GetUymax()));
+            TLine *p1leftboundary=new TLine(p1guasMeam-(momentumSigmaCut-1)*p1guasSigma,0,p1guasMeam-(momentumSigmaCut-1)*p1guasSigma,(0.9*SaveCheckCanvas->cd(2)->cd(row_iter - row_min + 1)->GetUymax()));
 			p1leftboundary->SetLineColor(5);
 			p1leftboundary->SetLineWidth(2);
 			p1leftboundary->Draw("same");
@@ -1266,6 +1255,7 @@ void DynamicCanvas(){
 			SieveRecCanvas->cd(1)->cd(2)->Divide(1,3);
 
 			SieveRecCanvas->cd(1)->cd(2)->cd(1);
+
 			//preCut
 			TH2F *selectedSievePreCuthh = (TH2F *) gROOT->FindObject(
 					"Sieve_Selected_th_ph_PreCut");
@@ -1333,7 +1323,7 @@ void DynamicCanvas(){
 					"contours");
 			if (!conts)
 				return;
-			TList *lcontour1 = (TList*) conts->At(1);
+			TList *lcontour1 = (TList*) conts->At(2);
 			if (!lcontour1)
 				return;
 			TGraph *gc1 = (TGraph*) lcontour1->First();
