@@ -639,7 +639,16 @@ if __name__ == '__main__':
     else:
         runIDList=[]
         for item in sys.argv:
-            if item.isdigit():
+            if item.endswith('txt'):
+                try:
+                    with open(item) as fileio:
+                        for line in fileio.readlines():
+                            try:
+                                if line:
+                                    runIDList.append(int(line))                     
+                except:
+                    pass
+            elif item.isdigit():
                 runIDList.append(item)
             else:
                 if 'parity' in item.lower():
