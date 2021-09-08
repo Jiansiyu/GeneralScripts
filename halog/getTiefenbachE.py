@@ -645,9 +645,12 @@ if __name__ == '__main__':
                         for line in fileio.readlines():
                             try:
                                 if line:
-                                    runIDList.append(int(line))                     
+                                    runIDList.append(int(line))
+                            except:
+                                pass                     
                 except:
                     pass
+
             elif item.isdigit():
                 runIDList.append(item)
             else:
