@@ -2,6 +2,8 @@ import os
 import matplotlib.pyplot as plt
 import statistics
 import pandas as pd
+import matplotlib as mpl
+mpl.use('Agg')
 
 class beamEInfor(object):
 
