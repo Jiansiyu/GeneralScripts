@@ -108,7 +108,7 @@ TChain *LoadrootFile(UInt_t runID,TString folder="/home/newdriver/Storage/Resear
 }
 
 // central momentum information
-void getCentralP(UInt_t runID,TString folder="/home/newdriver/Storage/Research/CRex_Experiment/RasterReplay/Replay/Result/"){
+void getCentralP(UInt_t runID,TString folder="/home/newdriver/Storage/Research/CRex_Experiment/RasterReplay/Replay/Result/DNP_version/"){
 	TString HRS="R";
 	if(runID<20000){
 		HRS="L";

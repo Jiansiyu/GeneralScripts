@@ -1,3 +1,14 @@
+# get the central P 
+ [folder](./centralP)
+
+ ```
+ analyzer 
+
+ .L getcentralP.C
+
+ getcentralP([runID])
+ ```
+
 # Hall A Spectrometer 
 Some scripts collections
 
