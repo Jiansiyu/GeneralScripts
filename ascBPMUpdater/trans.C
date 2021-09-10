@@ -196,6 +196,20 @@ int main(int argc, char* argv[])
                     d[5]=-2.2083;
                     d[6]=-3.4970;
                 }
+
+                // add the result for CRex
+                if(inputFilename.find("2689")!=std::string::npos){
+                    d[5]= -0.6820;
+                    d[6]= -0.5063;
+                }
+                if(inputFilename.find("2684")!=std::string::npos){
+                    d[5]= -0.6984;
+                    d[6]= -0.5096;
+                }
+                if(inputFilename.find("2718")!=std::string::npos){
+                    d[5]= -0.6612;
+                    d[6]= -0.4941;
+                }
             }
 
         	fprintf(fp2,"%d\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\n",index,d[0],d[1],d[2],d[3],d[4],d[5]/1000.0,d[6]/1000.0,0.0);
