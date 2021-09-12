@@ -210,6 +210,17 @@ int main(int argc, char* argv[])
                     d[5]= -0.6612;
                     d[6]= -0.4941;
                 }
+
+
+                if(inputFilename.find("2683")!=std::string::npos){
+                    d[5]= 1.2946;
+                    d[6]= -0.5042;
+                }
+                if(inputFilename.find("2687")!=std::string::npos){
+                    d[5]= 0.3023;
+                    d[6]= -0.4954;
+                }
+
             }
 
         	fprintf(fp2,"%d\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\n",index,d[0],d[1],d[2],d[3],d[4],d[5]/1000.0,d[6]/1000.0,0.0);
