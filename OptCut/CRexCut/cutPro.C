@@ -72,7 +72,7 @@ TString generalcutL="L.tr.n==1 ";//&& L.vdc.u1.nclust==1&& L.vdc.v1.nclust==1 &&
 //TString WorkDir = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200915";
 //TString WorkDir = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200921/RHRS";
 //TString WorkDir = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Water/cut_20201206";
-TString WorkDir = "/home/newdriver/Learning/GeneralScripts/OptCut/Result/CRex/20210907";
+TString WorkDir = "/home/newdriver/Learning/GeneralScripts/OptCut/Result/CRex/20210907/RHRS";
 
 TString CutSuf = ".FullCut.root";
 TString CutDescFileSufVertex = ".VertexCut.cut";
@@ -82,13 +82,13 @@ TString RootFileName;
 
 
 //LHRS
-int numberofSieveHoles[13]={0,0,0,5,6,5,5,6,5,5,4,3,2};
-int minSieveHoles[13]=     {0,0,0,1,0,1,1,0,1,1,1,2,2};
+//int numberofSieveHoles[13]={0,0,0,5,6,5,5,6,5,5,4,3,2};
+//int minSieveHoles[13]=     {0,0,0,1,0,1,1,0,1,1,1,2,2};
 
 
 //RHRS
-//int numberofSieveHoles[13]={0,0,0,6,6,5,5,6,5,5,4,3,2};
-//int minSieveHoles[13]=     {0,0,0,0,0,1,1,0,1,1,1,2,2};
+int numberofSieveHoles[13]={0,0,0,6,6,5,5,6,5,5,4,3,2};
+int minSieveHoles[13]=     {0,0,0,0,0,1,1,0,1,1,1,2,2};
 
 
 inline Bool_t IsFileExist (const std::string& name) {
@@ -1323,7 +1323,7 @@ void DynamicCanvas(){
 					"contours");
 			if (!conts)
 				return;
-			TList *lcontour1 = (TList*) conts->At(2);
+			TList *lcontour1 = (TList*) conts->At(2); // select which contour to be the boundary
 			if (!lcontour1)
 				return;
 			TGraph *gc1 = (TGraph*) lcontour1->First();
