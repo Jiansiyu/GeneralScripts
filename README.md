@@ -1,5 +1,6 @@
 # get the central P 
- [folder](./centralP)
+
+Get the run centrol momentum from replayed root files. [learn more](./centralP)
 
  ```
  analyzer 
@@ -10,14 +11,18 @@
  ```
 
 # Hall A Spectrometer 
+
 Some scripts collections
 
 
 
 
 
-
-
 ## try to add the Raster Current in the Optics Study 
+
+
+# [Halog Run Infor and Beam E modeul](./halog)
+
+Halog Crawler and Beam E moduel...[learn more](./halog)
 
 
