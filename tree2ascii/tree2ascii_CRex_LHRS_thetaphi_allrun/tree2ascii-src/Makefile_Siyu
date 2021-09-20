@@ -1,0 +1,48 @@
+# New Make file for Tree2ASCII
+#Author : Siyu
+
+
+
+#-----------------------------------------------------------------
+# need to change according to requirements
+SRC= tree2ascii.C
+
+EXTRAHDR =
+
+CORE = tree2ascii
+#-----------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Compile debug version (for gdb)
+export DEBUG = 1
+# Compile extra code for printing verbose messages (enabled with fDebug)
+export VERBOSE = 1
+# Compile extra diagnostic code (extra computations and global variables)
+export TESTCODE = 1
+# Compile support code for MC input data
+export MCDATA = 1
+
+#export I387MATH = 1
+export EXTRAWARN = 1
+
+# Architecture to compile for
+MACHINE := $(shell uname -s)
+ARCH    := linux
+SOSUF   := so
+ifeq ($(MACHINE),Darwin)
+  ARCH := macosx
+  SOSUF := dylib
+endif
+
+#------------------------------------------------------------------------
+# Hall A analyzer
+
+ifndef ANALYZER
+  $(error $$ANALYZER environment variable not defined)
+endif
+
+ifndef TREESEARCH
+  $(error $$TREESEARCH environment variable not defined)
+endif
+
+INCDIRS = $(wildcard $(addprefix $(ANALYZER)/, include src hana_decode hana_scaler Podd HallA) $(TREESEARCH)/ )

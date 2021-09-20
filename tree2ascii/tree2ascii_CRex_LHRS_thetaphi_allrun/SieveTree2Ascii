@@ -1,0 +1,71 @@
+#!/bin/bash
+
+## changed for PRex Optimization
+if [ "$#" -ne 2 ]; then
+    echo "Illegal number of parameters"
+    echo "./myTree2AscII [path contains the cut files] \"runIDs\" "
+    echo "example: ./myTree2AscII ../Result  20826 "
+    echo "used for read the root file and get the data according to previouse gen.sh rule file"
+    exit
+fi
+
+ARCH=$(arch)
+PROG=./tree2ascii
+#ROOTFILEDIR="/home/newdriver/Storage/Research/PRex_Experiment/prex_analyzer/optReplay/Result/OptFolder/" #little
+ROOTFILEDIR="/home/newdriver/Storage/Research/CRex_Experiment/optReplay/Result"
+prefix="prexRHRS"
+# Path that contains the cut 
+DIR=$1
+nfoil=1
+runlist=$2
+keyrun=${runlist}
+
+rootfilelist=""
+des="Sieve."${nfoil}".test"
+
+echo "===now run tree2ascii ==="
+
+for run in ${runlist}
+do
+    file=$ROOTFILEDIR/${prefix}_${run}_-1.root
+    echo $file
+    if [[ -f $file ]]; then
+        rootfilelist="${rootfilelist}${file} "
+        split=1
+        file=$ROOTFILEDIR/${prefix}_${run}_-1_${split}.root
+        echo $file
+        while [[ -f $file ]]
+        do
+            rootfilelist="$rootfilelist$file "
+            split=$(expr $split + 1)
+            file=$ROOTFILEDIR/${prefix}_${run}_-1_${split}.root
+            echo $file
+        done
+    fi
+done
+
+
+
+echo $rootfilelist
+
+#IdOffSet=49
+if [ -f $DIR/${des} ]
+then
+  mv -f $DIR/${des}  $DIR/${des}.old
+fi
+
+Id=0
+$PROG -pv -d SieveVars.def -O $Id\
+        -s $DIR/prexRHRS_${keyrun}.SieveCut.ncut \
+        -c $DIR/prexRHRS_${keyrun}.SieveCut.cut \
+        -g $DIR/prexRHRS_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Sieve.p4.f51 \
+        ${rootfilelist}
+
+cat  $DIR/Sieve.p4.f51 > $DIR/${des}
+
+#./$DIR/trans $DIR/Sieve.full.f51
+
+#mv temp.dat $DIR/Sieve.full.f51
+
+echo "Done!"
