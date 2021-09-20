@@ -1,0 +1,7 @@
+hcut_R_0_4_0 && R.tr.n==1 
+hcut_R_0_4_1 && R.tr.n==1 
+hcut_R_0_4_2 && R.tr.n==1 
+hcut_R_0_4_3 && R.tr.n==1 
+hcut_R_0_4_4 && R.tr.n==1 
+hcut_R_0_4_5 && R.tr.n==1 
+fEvtHdr.fRun==0
