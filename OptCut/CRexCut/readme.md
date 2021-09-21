@@ -28,7 +28,7 @@ root
 ```
 
 * click the sieve center
-* after click all the sieve center, click 's' in your keyboard, the cut file will be saved in the ```WorkDir```
+* after click all the sieve center, click ```s``` in your keyboard, the cut file will be saved in the ```WorkDir```
 
 **It did not behave well?**, 
 
